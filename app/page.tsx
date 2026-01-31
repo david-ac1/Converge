@@ -1,296 +1,158 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import ConvergenceMap from '@/components/ConvergenceMap';
-import { useUserMigrationState } from '@/hooks/useUserMigrationState';
-import { MigrationSnapshot, MigrationPlan, MigrationStep } from '@/types/migration';
+import React from 'react';
+import Link from 'next/link';
+import { motion } from 'framer-motion';
+import PassportSchematic from '@/components/PassportSchematic';
 
-export default function Home() {
-  const {
-    state,
-    isLoading,
-    initialize,
-    updatePlan,
-  } = useUserMigrationState();
-
-  const [currentYear, setCurrentYear] = useState(0);
-  const [isGenerating, setIsGenerating] = useState(false);
-  const [selectedStep, setSelectedStep] = useState<MigrationStep | null>(null);
-
-  // Initialize demo state on first load
-  useEffect(() => {
-    if (!state && !isLoading) {
-      // Demo current state
-      const demoCurrentState: MigrationSnapshot = {
-        timestamp: new Date(),
-        location: 'Lagos, Nigeria',
-        profession: 'Software Engineer',
-        income: 45000,
-        skills: ['JavaScript', 'React', 'Node.js'],
-        qualifications: ['B.Sc. Computer Science'],
-        familyStatus: 'Single',
-        dependencies: 0,
-        assets: 15000,
-        liabilities: 5000,
-        metadata: {},
-      };
-
-      // Demo goal state
-      const demoGoalState: MigrationSnapshot = {
-        timestamp: new Date(),
-        location: 'Toronto, Canada',
-        profession: 'Senior Software Engineer',
-        income: 120000,
-        skills: ['TypeScript', 'React', 'Node.js', 'AWS', 'System Design'],
-        qualifications: ['B.Sc. Computer Science', 'AWS Certification'],
-        familyStatus: 'Single',
-        dependencies: 0,
-        assets: 100000,
-        liabilities: 0,
-        metadata: {},
-      };
-
-      initialize('demo_user', demoCurrentState, demoGoalState);
-    }
-  }, [state, isLoading, initialize]);
-
-  const handleGeneratePlan = async () => {
-    if (!state) return;
-
-    setIsGenerating(true);
-    try {
-      const response = await fetch('/api/gemini/plan', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          currentState: state.currentState,
-          goalState: state.goalState,
-          timeframe: 10,
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to generate plan');
-      }
-
-      const data = await response.json();
-      updatePlan(data.plan);
-    } catch (error) {
-      console.error('Error generating plan:', error);
-      alert('Failed to generate migration plan. Check console for details.');
-    } finally {
-      setIsGenerating(false);
-    }
-  };
-
-  const handleStartInterview = async () => {
-    try {
-      const response = await fetch('/api/tavus/interview', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          userId: state?.userId || 'demo_user',
-          interviewType: 'initial',
-          context: {
-            currentPlan: state?.activePlan,
-          },
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to start interview');
-      }
-
-      const data = await response.json();
-      alert(`Interview initiated! Session ID: ${data.sessionId}`);
-    } catch (error) {
-      console.error('Error starting interview:', error);
-      alert('Failed to start interview. Check console for details.');
-    }
-  };
-
-  if (isLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-950 to-slate-900">
-        <div className="text-white text-xl">Loading CONVERGE...</div>
-      </div>
-    );
-  }
-
+export default function LandingPage() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950">
+    <div className="min-h-screen flex flex-col relative">
+      {/* Background Map SVG Overlay (Low opacity) */}
+      <div className="fixed inset-0 pointer-events-none opacity-10 z-0">
+        <svg className="w-full h-full object-cover" viewBox="0 0 1000 500">
+          <path className="animate-draw" d="M150,150 Q400,100 600,200" fill="none" stroke="#00D1FF" strokeWidth="0.5"></path>
+          <path className="animate-draw" style={{ animationDelay: '0.5s' }} d="M200,300 Q450,250 800,150" fill="none" stroke="#00D1FF" strokeWidth="1"></path>
+          <path className="animate-draw" style={{ animationDelay: '1s' }} d="M600,200 Q700,350 850,300" fill="none" stroke="#00D1FF" strokeWidth="0.5"></path>
+          <circle cx="150" cy="150" fill="#00D1FF" r="2"></circle>
+          <circle cx="600" cy="200" fill="#00D1FF" r="2"></circle>
+          <circle cx="800" cy="150" fill="#00D1FF" r="2"></circle>
+          <circle cx="850" cy="300" fill="#00D1FF" r="2"></circle>
+        </svg>
+      </div>
+
       {/* Header */}
-      <header className="border-b border-slate-800 bg-slate-900/50 backdrop-blur-xl">
-        <div className="container mx-auto px-6 py-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500">
-                CONVERGE
-              </h1>
-              <p className="text-sm text-slate-400 mt-1">
-                Goal-Conditioned Migration Planning
-              </p>
-            </div>
-            <div className="flex gap-3">
-              <button
-                onClick={handleGeneratePlan}
-                disabled={isGenerating || !state}
-                className="px-6 py-2.5 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 disabled:from-slate-700 disabled:to-slate-800 text-white font-medium rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl disabled:cursor-not-allowed"
-              >
-                {isGenerating ? (
-                  <span className="flex items-center gap-2">
-                    <span className="animate-spin">⚙️</span>
-                    Generating...
-                  </span>
-                ) : (
-                  '🤖 Generate Plan'
-                )}
-              </button>
-              <button
-                onClick={handleStartInterview}
-                disabled={!state}
-                className="px-6 py-2.5 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 disabled:from-slate-700 disabled:to-slate-800 text-white font-medium rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl disabled:cursor-not-allowed"
-              >
-                🎥 Start Interview
-              </button>
-            </div>
+      <header className="flex items-center justify-between border-b border-primary/10 bg-background/80 backdrop-blur-md px-6 md:px-10 py-4 sticky top-0 z-50">
+        <div className="flex items-center gap-4">
+          <div className="size-7 text-primary">
+            <svg fill="none" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+              <path clipRule="evenodd" d="M24 4H6V17.3333V30.6667H24V44H42V30.6667V17.3333H24V4Z" fill="currentColor" fillRule="evenodd"></path>
+            </svg>
           </div>
+          <h2 className="text-xl font-black leading-tight tracking-tighter font-display uppercase tracking-[-0.05em]">CONVERGE</h2>
+        </div>
+        <nav className="hidden lg:flex items-center gap-10 font-mono text-[10px] tracking-widest">
+          <span className="text-white/60 hover:text-primary transition-colors cursor-pointer">[01. ASSET_MAP]</span>
+          <span className="text-white/60 hover:text-primary transition-colors cursor-pointer">[02. PASSPORT_LOGIC]</span>
+          <span className="text-white/60 hover:text-primary transition-colors cursor-pointer">[03. CORRIDOR_SIM]</span>
+          <span className="text-white/60 hover:text-primary transition-colors cursor-pointer">[04. TERMINAL]</span>
+        </nav>
+        <div className="flex items-center gap-4">
+          <span className="font-mono text-[10px] text-primary/70 hidden sm:inline uppercase">status: encrypted_link</span>
+          <div className="h-8 w-px bg-primary/20"></div>
+          <button className="bg-primary/10 border border-primary/30 text-primary px-3 py-1 rounded-sm font-mono text-[11px] font-bold">
+            v1.0.4-STABLE
+          </button>
         </div>
       </header>
 
       {/* Main Content */}
-      <main className="container mx-auto px-6 py-8">
-        {/* Current State Overview */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-          <div className="bg-slate-900/50 backdrop-blur-xl border border-slate-800 rounded-xl p-6">
-            <h2 className="text-xl font-semibold text-white mb-4 flex items-center gap-2">
-              📍 Current State
-            </h2>
-            {state && (
-              <div className="space-y-2 text-sm">
-                <div className="flex justify-between">
-                  <span className="text-slate-400">Location:</span>
-                  <span className="text-white font-medium">{state.currentState.location}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-slate-400">Profession:</span>
-                  <span className="text-white font-medium">{state.currentState.profession}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-slate-400">Income:</span>
-                  <span className="text-white font-medium">${state.currentState.income.toLocaleString()}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-slate-400">Assets:</span>
-                  <span className="text-emerald-400 font-medium">${state.currentState.assets.toLocaleString()}</span>
-                </div>
-              </div>
-            )}
-          </div>
+      <main className="flex-1 relative z-10">
+        <section className="relative w-full max-w-[1440px] mx-auto px-6 py-12 md:py-24 grid lg:grid-cols-2 gap-16 items-center">
+          {/* Coordinate Labels */}
+          <div className="absolute top-4 left-6 font-mono text-[9px] text-primary/40 uppercase tracking-widest">[40.7128° N]</div>
+          <div className="absolute top-4 right-6 font-mono text-[9px] text-primary/40 uppercase tracking-widest">[74.0060° W]</div>
 
-          <div className="bg-slate-900/50 backdrop-blur-xl border border-slate-800 rounded-xl p-6">
-            <h2 className="text-xl font-semibold text-white mb-4 flex items-center gap-2">
-              🎯 Goal State
-            </h2>
-            {state && (
-              <div className="space-y-2 text-sm">
-                <div className="flex justify-between">
-                  <span className="text-slate-400">Location:</span>
-                  <span className="text-white font-medium">{state.goalState.location}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-slate-400">Profession:</span>
-                  <span className="text-white font-medium">{state.goalState.profession}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-slate-400">Target Income:</span>
-                  <span className="text-white font-medium">${state.goalState.income.toLocaleString()}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-slate-400">Target Assets:</span>
-                  <span className="text-emerald-400 font-medium">${state.goalState.assets.toLocaleString()}</span>
-                </div>
+          {/* Left Column: Text & CTA */}
+          <div className="flex flex-col gap-10 relative z-20">
+            <div className="space-y-6">
+              <div className="inline-flex items-center gap-2 text-primary font-mono text-[11px] tracking-[0.3em] uppercase">
+                <span className="w-1.5 h-1.5 bg-primary rounded-full animate-pulse shadow-[0_0_8px_#00D1FF]"></span>
+                Mobility_Architecture_v1.0
               </div>
-            )}
-          </div>
-        </div>
-
-        {/* Timeline Scrubber */}
-        <div className="bg-slate-900/50 backdrop-blur-xl border border-slate-800 rounded-xl p-6 mb-8">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xl font-semibold text-white">Timeline</h2>
-            <span className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500">
-              Year {currentYear.toFixed(1)}
-            </span>
-          </div>
-          <input
-            type="range"
-            min="0"
-            max="10"
-            step="0.25"
-            value={currentYear}
-            onChange={(e) => setCurrentYear(parseFloat(e.target.value))}
-            className="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-blue-500"
-          />
-          <div className="flex justify-between text-xs text-slate-500 mt-2">
-            <span>Year 0</span>
-            <span>Year 5</span>
-            <span>Year 10</span>
-          </div>
-        </div>
-
-        {/* Convergence Map */}
-        <div className="bg-slate-900/50 backdrop-blur-xl border border-slate-800 rounded-xl p-6 mb-8">
-          <div className="h-[600px]">
-            <ConvergenceMap
-              migrationPlan={state?.activePlan || null}
-              currentYear={currentYear}
-              onNodeClick={(step) => setSelectedStep(step)}
-              animationSpeed={1.0}
-            />
-          </div>
-        </div>
-
-        {/* Selected Step Details */}
-        {selectedStep && (
-          <div className="bg-gradient-to-br from-blue-900/50 to-purple-900/50 backdrop-blur-xl border border-blue-800 rounded-xl p-6">
-            <h2 className="text-xl font-semibold text-white mb-4">Step Details</h2>
-            <div className="space-y-3">
-              <div>
-                <span className="text-sm text-slate-400">Title:</span>
-                <p className="text-lg font-semibold text-white">{selectedStep.title}</p>
-              </div>
-              <div>
-                <span className="text-sm text-slate-400">Description:</span>
-                <p className="text-white">{selectedStep.description}</p>
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <span className="text-sm text-slate-400">Timeline:</span>
-                  <p className="text-white">Year {selectedStep.year}, Q{selectedStep.quarter}</p>
-                </div>
-                <div>
-                  <span className="text-sm text-slate-400">Duration:</span>
-                  <p className="text-white">{selectedStep.expectedDuration} months</p>
-                </div>
-                <div>
-                  <span className="text-sm text-slate-400">Cost:</span>
-                  <p className="text-emerald-400 font-semibold">${selectedStep.expectedCost.toLocaleString()}</p>
-                </div>
-                <div>
-                  <span className="text-sm text-slate-400">Success Rate:</span>
-                  <p className="text-blue-400 font-semibold">{(selectedStep.probability * 100).toFixed(0)}%</p>
-                </div>
+              <h1 className="text-white text-6xl md:text-8xl font-black leading-[0.9] tracking-tighter uppercase font-display">
+                Global <br />Mobility <br />is a <span className="text-primary italic">Strategy</span>
+              </h1>
+              <p className="text-white/40 text-lg font-normal leading-relaxed max-w-[500px] border-l-2 border-primary/20 pl-6">
+                Deconstructing global access into granular engineering schematics. Leverage passport power through technical precision and biometric data alignment.
+              </p>
+            </div>
+            <div className="flex flex-col sm:flex-row gap-6 items-center">
+              <Link href="/dashboard" className="w-full sm:w-auto">
+                <button className="w-full sm:w-auto min-w-[240px] bg-primary text-black h-14 px-8 font-mono text-sm font-black tracking-widest hover:bg-white transition-all shadow-[0_0_30px_rgba(0,209,255,0.3)]">
+                  <span className="cursor-blink">INIT_SIM_v1.0</span>
+                </button>
+              </Link>
+              <div className="flex flex-col font-mono text-[10px] text-white/30 gap-1 uppercase tracking-tighter">
+                <span>// LOAD_VECTOR: 233ms</span>
+                <span>// BUFFER_SYNC: OK</span>
+                <span>// LAT_COORD: 51.5074 N</span>
               </div>
             </div>
           </div>
-        )}
+
+          {/* Right Column: Schematic */}
+          <div className="relative flex items-center justify-center p-4">
+            <PassportSchematic />
+          </div>
+        </section>
+
+        {/* Metric Grid Section */}
+        <section className="w-full max-w-[1440px] mx-auto px-6 py-12 relative">
+          <div className="absolute bottom-4 left-6 font-mono text-[9px] text-primary/40 uppercase tracking-widest">[34.0522° N]</div>
+          <div className="absolute bottom-4 right-6 font-mono text-[9px] text-primary/40 uppercase tracking-widest">[118.2437° W]</div>
+
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-0 border border-primary/10">
+            {/* Metric 1 */}
+            <div className="p-8 border-r border-primary/10 flex flex-col gap-4 group hover:bg-primary/5 transition-colors">
+              <span className="font-mono text-[9px] text-primary/50 tracking-[0.2em]">ACCESS_NODES</span>
+              <div className="flex items-end gap-2">
+                <span className="text-4xl font-black font-display tracking-tighter">192</span>
+                <span className="font-mono text-[10px] text-primary mb-1">/COUNTRIES</span>
+              </div>
+              <div className="h-1 w-full bg-white/5 overflow-hidden">
+                <div className="h-full bg-primary w-[85%]"></div>
+              </div>
+            </div>
+            {/* Metric 2 */}
+            <div className="p-8 border-r border-primary/10 flex flex-col gap-4 group hover:bg-primary/5 transition-colors">
+              <span className="font-mono text-[9px] text-primary/50 tracking-[0.2em]">VISA_FREE_POWER</span>
+              <div className="flex items-end gap-2">
+                <span className="text-4xl font-black font-display tracking-tighter">94.2%</span>
+              </div>
+              <div className="h-1 w-full bg-white/5 overflow-hidden">
+                <div className="h-full bg-primary w-[94%]"></div>
+              </div>
+            </div>
+            {/* Metric 3 */}
+            <div className="p-8 border-r border-primary/10 flex flex-col gap-4 group hover:bg-primary/5 transition-colors">
+              <span className="font-mono text-[9px] text-primary/50 tracking-[0.2em]">CALC_LATENCY</span>
+              <div className="flex items-end gap-2">
+                <span className="text-4xl font-black font-display tracking-tighter">14ms</span>
+                <span className="font-mono text-[10px] text-primary mb-1">SYS_OP</span>
+              </div>
+              <div className="h-1 w-full bg-white/5 overflow-hidden">
+                <div className="h-full bg-primary w-[15%]"></div>
+              </div>
+            </div>
+            {/* Metric 4 */}
+            <div className="p-8 flex flex-col gap-4 group hover:bg-primary/5 transition-colors">
+              <span className="font-mono text-[9px] text-primary/50 tracking-[0.2em]">DATA_STREAM</span>
+              <div className="flex items-end gap-2">
+                <span className="text-4xl font-black font-display tracking-tighter">LIVE</span>
+                <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse mb-3"></span>
+              </div>
+              <div className="h-1 w-full bg-white/5 overflow-hidden">
+                <div className="h-full bg-primary w-full"></div>
+              </div>
+            </div>
+          </div>
+        </section>
       </main>
 
-      {/* Footer */}
-      <footer className="border-t border-slate-800 bg-slate-900/50 backdrop-blur-xl mt-12">
-        <div className="container mx-auto px-6 py-4 text-center text-sm text-slate-500">
-          Powered by Gemini 3 API & Tavus CVI | CONVERGE v1.0.0
+      <footer className="border-t border-primary/10 bg-black py-12 px-6">
+        <div className="max-w-[1440px] mx-auto flex flex-col md:flex-row justify-between items-center gap-8">
+          <div className="flex flex-col gap-2">
+            <div className="flex items-center gap-3">
+              <div className="size-5 bg-primary"></div>
+              <span className="font-display font-black tracking-widest text-lg">CONVERGE</span>
+            </div>
+            <p className="font-mono text-[10px] text-white/30 tracking-tight uppercase">GLOBAL_MOBILITY_ENGINEERING_SYSTEMS_2026</p>
+          </div>
+          <div className="text-right flex flex-col gap-2 items-end">
+            <div className="font-mono text-[11px] text-white/60">SYSTEM_STATUS: <span className="text-green-500">OPERATIONAL</span></div>
+            <div className="font-mono text-[9px] text-white/20">REL: 2026.Q1_STABLE</div>
+          </div>
         </div>
       </footer>
     </div>

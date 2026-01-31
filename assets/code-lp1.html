@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>CONVERGE | Global Mobility Blueprint</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&amp;family=JetBrains+Mono:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#2b8cee",
+                        "background-dark": "#0D0D0D",
+                        "blueprint-accent": "rgba(43, 140, 238, 0.4)",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"],
+                        "mono": ["JetBrains Mono", "monospace"]
+                    },
+                },
+            },
+        }
+    </script>
+<style type="text/tailwindcss">
+        @layer base {
+            body {
+                background-color: #0D0D0D;
+                background-image: 
+                    linear-gradient(to right, rgba(43, 140, 238, 0.05) 1px, transparent 1px),
+                    linear-gradient(to bottom, rgba(43, 140, 238, 0.05) 1px, transparent 1px);
+                background-size: 40px 40px;
+            }
+        }
+        .cursor-blink::after {
+            content: '_';
+            animation: blink 1s step-start infinite;
+        }
+        @keyframes blink {
+            50% { opacity: 0; }
+        }
+        .blueprint-border {
+            border: 1px solid rgba(43, 140, 238, 0.15);
+            position: relative;
+        }
+        .map-line {
+            stroke-dasharray: 1000;
+            stroke-dashoffset: 1000;
+            animation: draw 3s ease-out forwards;
+        }
+        @keyframes draw {
+            to { stroke-dashoffset: 0; }
+        }
+        .coordinate-label {
+            @apply font-mono text-[9px] text-primary/40 uppercase tracking-widest absolute;
+        }
+    </style>
+</head>
+<body class="font-display text-white min-h-screen relative overflow-x-hidden">
+<div class="fixed inset-0 pointer-events-none opacity-10 z-0">
+<svg class="w-full h-full object-cover" viewBox="0 0 1000 500">
+<path class="map-line" d="M150,150 Q400,100 600,200" fill="none" stroke="#2b8cee" stroke-width="0.5"></path>
+<path class="map-line" d="M200,300 Q450,250 800,150" fill="none" stroke="#2b8cee" stroke-width="1"></path>
+<path class="map-line" d="M600,200 Q700,350 850,300" fill="none" stroke="#2b8cee" stroke-width="0.5"></path>
+<circle cx="150" cy="150" fill="#2b8cee" r="2"></circle>
+<circle cx="600" cy="200" fill="#2b8cee" r="2"></circle>
+<circle cx="800" cy="150" fill="#2b8cee" r="2"></circle>
+<circle cx="850" cy="300" fill="#2b8cee" r="2"></circle>
+</svg>
+</div>
+<div class="relative flex flex-col w-full z-10">
+<header class="flex items-center justify-between border-b border-primary/10 bg-background-dark/80 backdrop-blur-md px-6 md:px-10 py-4 sticky top-0 z-50">
+<div class="flex items-center gap-4">
+<div class="size-7 text-primary">
+<svg fill="none" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+<path clip-rule="evenodd" d="M24 4H6V17.3333V30.6667H24V44H42V30.6667V17.3333H24V4Z" fill="currentColor" fill-rule="evenodd"></path>
+</svg>
+</div>
+<h2 class="text-xl font-black leading-tight tracking-tighter font-display uppercase">CONVERGE</h2>
+</div>
+<nav class="hidden lg:flex items-center gap-10 font-mono text-[10px] tracking-widest">
+<a class="text-white/60 hover:text-primary transition-colors" href="#">[01. ASSET_MAP]</a>
+<a class="text-white/60 hover:text-primary transition-colors" href="#">[02. PASSPORT_LOGIC]</a>
+<a class="text-white/60 hover:text-primary transition-colors" href="#">[03. CORRIDOR_SIM]</a>
+<a class="text-white/60 hover:text-primary transition-colors" href="#">[04. TERMINAL]</a>
+</nav>
+<div class="flex items-center gap-4">
+<span class="font-mono text-[10px] text-primary/70 hidden sm:inline uppercase">status: encrypted_link</span>
+<div class="h-8 w-px bg-primary/20"></div>
+<button class="bg-primary/10 border border-primary/30 text-primary px-3 py-1 rounded font-mono text-[11px] font-bold">
+                v1.0.4-STABLE
+            </button>
+</div>
+</header>
+<main class="flex-1">
+<section class="relative w-full max-w-[1440px] mx-auto px-6 py-12 md:py-24 grid lg:grid-cols-2 gap-16 items-center">
+<div class="coordinate-label top-4 left-6">[40.7128° N]</div>
+<div class="coordinate-label top-4 right-6">[74.0060° W]</div>
+<div class="flex flex-col gap-10 relative z-20">
+<div class="space-y-6">
+<div class="inline-flex items-center gap-2 text-primary font-mono text-[11px] tracking-[0.3em] uppercase">
+<span class="w-1.5 h-1.5 bg-primary rounded-full animate-pulse shadow-[0_0_8px_#2b8cee]"></span>
+                        Mobility_Architecture_v1.0
+                    </div>
+<h1 class="text-white text-6xl md:text-8xl font-black leading-[0.9] tracking-tighter uppercase font-display">
+                        Global <br/>Mobility <br/>is a <span class="text-primary italic">Strategy</span>
+</h1>
+<p class="text-white/40 text-lg font-normal leading-relaxed max-w-[500px] border-l-2 border-primary/20 pl-6">
+                        Deconstructing global access into granular engineering schematics. Leverage passport power through technical precision and biometric data alignment.
+                    </p>
+</div>
+<div class="flex flex-col sm:flex-row gap-6 items-center">
+<button class="w-full sm:w-auto min-w-[240px] bg-primary text-black h-14 px-8 font-mono text-sm font-black tracking-widest hover:bg-white transition-all shadow-[0_0_30px_rgba(43,140,238,0.3)]">
+<span class="cursor-blink">INIT_SIM_v1.0</span>
+</button>
+<div class="flex flex-col font-mono text-[10px] text-white/30 gap-1 uppercase tracking-tighter">
+<span>// LOAD_VECTOR: 233ms</span>
+<span>// BUFFER_SYNC: OK</span>
+<span>// LAT_COORD: 51.5074 N</span>
+</div>
+</div>
+</div>
+<div class="relative flex items-center justify-center p-4">
+<div class="w-full aspect-square max-w-[600px] relative border border-primary/5 bg-[#111a22]/20 rounded-sm">
+<div class="absolute inset-0 opacity-20" style="background-image: radial-gradient(circle, #2b8cee 1px, transparent 1px); background-size: 20px 20px;"></div>
+<div class="relative w-full h-full flex items-center justify-center">
+<div class="absolute w-[220px] h-[300px] border border-primary/40 bg-primary/5 -translate-x-12 -translate-y-12 rotate-[15deg]">
+<div class="absolute bottom-2 left-2 font-mono text-[8px] text-primary/60">SUBSTRATE_V_09</div>
+</div>
+<div class="absolute w-[220px] h-[300px] border border-primary/60 bg-primary/10 -translate-x-6 -translate-y-6 rotate-[15deg] backdrop-blur-sm flex items-center justify-center">
+<div class="w-16 h-16 border border-primary p-2">
+<div class="w-full h-full border-2 border-primary/40 flex items-center justify-center">
+<span class="material-symbols-outlined text-primary text-xl">contactless</span>
+</div>
+</div>
+<div class="absolute top-4 right-4 text-right">
+<div class="font-mono text-[7px] text-primary mb-1">BIOMETRIC_ENCRYPTION_LAYER</div>
+<div class="font-mono text-[6px] text-primary/40 leading-tight">ISO/IEC 7810<br/>FID_00192_B</div>
+</div>
+</div>
+<div class="absolute w-[220px] h-[300px] border-2 border-primary bg-[#0D0D0D] rotate-[15deg] shadow-2xl p-6 flex flex-col">
+<div class="flex justify-between items-start mb-10">
+<div class="size-6 border border-primary flex items-center justify-center">
+<span class="material-symbols-outlined text-[10px] text-primary">qr_code</span>
+</div>
+<div class="font-mono text-[8px] text-primary">CHIP_UID: 0xFD91A</div>
+</div>
+<div class="space-y-3">
+<div class="h-2 bg-primary/30 w-full"></div>
+<div class="h-2 bg-primary/30 w-3/4"></div>
+<div class="h-8 border border-primary/30 w-full mt-10"></div>
+</div>
+<div class="mt-auto flex justify-between items-end">
+<div class="font-mono text-[7px] text-primary/40 uppercase">Global_Standard</div>
+<div class="font-mono text-[9px] text-primary font-bold">TYPE: P</div>
+</div>
+</div>
+<div class="absolute top-[20%] right-[5%] flex items-center gap-4">
+<div class="w-20 h-px bg-primary/40"></div>
+<div class="font-mono text-[9px] text-primary/80 uppercase">ISO_7810_STANDARD</div>
+</div>
+<div class="absolute bottom-[20%] left-[5%] flex items-center gap-4">
+<div class="font-mono text-[9px] text-primary/80 uppercase text-right">ENCRYPTION_CORE_01</div>
+<div class="w-16 h-px bg-primary/40"></div>
+</div>
+</div>
+<div class="absolute bottom-6 left-6 font-mono text-[10px] text-primary/40 uppercase">
+                        Fig_0.1: exploded_view_technical_blueprint
+                    </div>
+</div>
+</div>
+</section>
+<section class="w-full max-w-[1440px] mx-auto px-6 py-12 relative">
+<div class="coordinate-label bottom-4 left-6">[34.0522° N]</div>
+<div class="coordinate-label bottom-4 right-6">[118.2437° W]</div>
+<div class="grid grid-cols-2 lg:grid-cols-4 gap-0 border border-primary/10">
+<div class="p-8 border-r border-primary/10 flex flex-col gap-4 group hover:bg-primary/5 transition-colors">
+<span class="font-mono text-[9px] text-primary/50 tracking-[0.2em]">ACCESS_NODES</span>
+<div class="flex items-end gap-2">
+<span class="text-4xl font-black font-display tracking-tighter">192</span>
+<span class="font-mono text-[10px] text-primary mb-1">/COUNTRIES</span>
+</div>
+<div class="h-1 w-full bg-white/5 overflow-hidden">
+<div class="h-full bg-primary w-[85%]"></div>
+</div>
+</div>
+<div class="p-8 border-r border-primary/10 flex flex-col gap-4 group hover:bg-primary/5 transition-colors">
+<span class="font-mono text-[9px] text-primary/50 tracking-[0.2em]">VISA_FREE_POWER</span>
+<div class="flex items-end gap-2">
+<span class="text-4xl font-black font-display tracking-tighter">94.2%</span>
+</div>
+<div class="h-1 w-full bg-white/5 overflow-hidden">
+<div class="h-full bg-primary w-[94%]"></div>
+</div>
+</div>
+<div class="p-8 border-r border-primary/10 flex flex-col gap-4 group hover:bg-primary/5 transition-colors">
+<span class="font-mono text-[9px] text-primary/50 tracking-[0.2em]">CALC_LATENCY</span>
+<div class="flex items-end gap-2">
+<span class="text-4xl font-black font-display tracking-tighter">14ms</span>
+<span class="font-mono text-[10px] text-primary mb-1">SYS_OP</span>
+</div>
+<div class="h-1 w-full bg-white/5 overflow-hidden">
+<div class="h-full bg-primary w-[15%]"></div>
+</div>
+</div>
+<div class="p-8 flex flex-col gap-4 group hover:bg-primary/5 transition-colors">
+<span class="font-mono text-[9px] text-primary/50 tracking-[0.2em]">DATA_STREAM</span>
+<div class="flex items-end gap-2">
+<span class="text-4xl font-black font-display tracking-tighter">LIVE</span>
+<span class="w-2 h-2 rounded-full bg-green-500 animate-pulse mb-3"></span>
+</div>
+<div class="h-1 w-full bg-white/5 overflow-hidden">
+<div class="h-full bg-primary w-full"></div>
+</div>
+</div>
+</div>
+</section>
+<section class="w-full max-w-[1440px] mx-auto px-6 py-24">
+<div class="grid lg:grid-cols-3 gap-12">
+<div class="lg:col-span-1 space-y-6">
+<span class="font-mono text-primary text-[10px] tracking-[0.4em] uppercase">Architecture</span>
+<h2 class="text-5xl font-black font-display tracking-tighter uppercase leading-none">Strategic <br/>Logic <br/>Gates</h2>
+<p class="text-white/40 text-sm leading-relaxed max-w-[300px]">
+                        Our platform operates as a modular engineering system for global compliance.
+                    </p>
+</div>
+<div class="lg:col-span-2 grid md:grid-cols-2 gap-px bg-primary/10 border border-primary/10">
+<div class="bg-background-dark p-10 flex flex-col gap-6 hover:bg-primary/5 transition-all">
+<div class="font-mono text-[9px] text-primary/40">[MOD_011]</div>
+<h3 class="text-2xl font-bold font-display uppercase">Tax Compliance Matrix</h3>
+<p class="text-white/40 text-sm">Automated fiscal boundary analysis mapping legal requirements to digital data flows for global personnel.</p>
+<div class="mt-auto pt-6 flex items-center justify-between border-t border-white/5">
+<span class="font-mono text-[10px] text-primary">RUN_ANALYSIS</span>
+<span class="material-symbols-outlined text-sm text-primary">arrow_forward</span>
+</div>
+</div>
+<div class="bg-background-dark p-10 flex flex-col gap-6 hover:bg-primary/5 transition-all">
+<div class="font-mono text-[9px] text-primary/40">[MOD_042]</div>
+<h3 class="text-2xl font-bold font-display uppercase">Corridor Analysis</h3>
+<p class="text-white/40 text-sm">Technical modeling of travel corridors based on passport strength and visa-free reciprocity indices.</p>
+<div class="mt-auto pt-6 flex items-center justify-between border-t border-white/5">
+<span class="font-mono text-[10px] text-primary">MAP_VECTOR</span>
+<span class="material-symbols-outlined text-sm text-primary">arrow_forward</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+</main>
+<footer class="border-t border-primary/10 bg-black py-12 px-6">
+<div class="max-w-[1440px] mx-auto flex flex-col md:flex-row justify-between items-center gap-8">
+<div class="flex flex-col gap-2">
+<div class="flex items-center gap-3">
+<div class="size-5 bg-primary"></div>
+<span class="font-display font-black tracking-widest text-lg">CONVERGE</span>
+</div>
+<p class="font-mono text-[10px] text-white/30 tracking-tight uppercase">GLOBAL_MOBILITY_ENGINEERING_SYSTEMS_2024</p>
+</div>
+<div class="flex gap-12 font-mono text-[10px] text-white/40 uppercase">
+<div class="flex flex-col gap-2">
+<span class="text-primary font-bold">// Protocols</span>
+<a class="hover:text-white transition-colors" href="#">[SEC_LAYER]</a>
+<a class="hover:text-white transition-colors" href="#">[PRIV_CORE]</a>
+</div>
+<div class="flex flex-col gap-2">
+<span class="text-primary font-bold">// System</span>
+<a class="hover:text-white transition-colors" href="#">[BUILD_0xFD2]</a>
+<a class="hover:text-white transition-colors" href="#">[LOGS_ROOT]</a>
+</div>
+</div>
+<div class="text-right flex flex-col gap-2 items-end">
+<div class="font-mono text-[11px] text-white/60">SYSTEM_STATUS: <span class="text-green-500">OPERATIONAL</span></div>
+<div class="font-mono text-[9px] text-white/20">REL: 2024.Q4_STABLE</div>
+</div>
+</div>
+</footer>
+</div>
+
+</body></html>
