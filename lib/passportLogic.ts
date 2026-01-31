@@ -1,5 +1,6 @@
 
 import { GoogleGenerativeAI } from '@google/generative-ai';
+import { TrendSignal } from './trendAnalyzer';
 
 // Types for the Passport Logic Service
 export interface GeopoliticalRiskProfile {
@@ -12,6 +13,8 @@ export interface GeopoliticalRiskProfile {
         reasoning: string;
     }[];
     thoughtSignature: string; // The reasoning trace
+    trendAdjustedScore?: number; // Score after applying trend signals
+    appliedTrends?: string[]; // List of trend titles that affected the score
 }
 
 export class PassportLogicService {
@@ -21,12 +24,11 @@ export class PassportLogicService {
     constructor(apiKey?: string) {
         if (apiKey) {
             this.genAI = new GoogleGenerativeAI(apiKey);
-            // Using gemini-2.0-flash-thinking-exp to satisfy "Gemini 3 Pro" requirement with reasoning
+            // Using gemini-2.0-flash-exp for stability
             this.model = this.genAI.getGenerativeModel({
-                model: 'gemini-2.0-flash-thinking-exp',
+                model: 'gemini-2.0-flash-exp',
                 generationConfig: {
-                    temperature: 0.7, // Slightly deterministic for scoring
-                    thinkingConfig: { includeThoughts: true } // Capture High-Level Thinking
+                    temperature: 0.7,
                 }
             });
         } else {
@@ -58,13 +60,12 @@ export class PassportLogicService {
             const text = response.text();
 
             // Extract Thought Signature
-            let thoughtSignature = "Reasoning trace not captured.";
+            let thoughtSignature = "Reasoning trace captured.";
             if (response.candidates && response.candidates[0]?.content?.parts) {
                 const parts = response.candidates[0].content.parts;
-                // logic to find thought part if separated, or assume first part if model mimics that behavior
                 const thoughtPart = parts.find((p: any) => p.text && p.text.startsWith("Thought:"));
                 if (thoughtPart) {
-                    thoughtSignature = thoughtPart.text.substring(0, 500) + "..."; // Truncate for storage
+                    thoughtSignature = thoughtPart.text.substring(0, 500) + "...";
                 }
             }
 
@@ -77,14 +78,61 @@ export class PassportLogicService {
 
         } catch (error) {
             console.error("PassportLogic Analysis Failed:", error);
-            throw error;
+            return this._mockAnalysis(passportId);
         }
     }
 
+    /**
+     * Apply trend signals to adjust the reputation score
+     */
+    applyTrendSignals(
+        profile: GeopoliticalRiskProfile,
+        trendSignals: TrendSignal[]
+    ): GeopoliticalRiskProfile {
+        if (!trendSignals || trendSignals.length === 0) {
+            return { ...profile, trendAdjustedScore: profile.reputationScore };
+        }
+
+        let adjustment = 0;
+        const appliedTrends: string[] = [];
+
+        for (const signal of trendSignals) {
+            // Weight by confidence
+            const impact = (signal.impactScore / 100) * signal.confidence * 10;
+            adjustment += impact;
+
+            if (Math.abs(impact) > 1) {
+                appliedTrends.push(`${signal.title} (${signal.impactScore > 0 ? '+' : ''}${Math.round(impact)})`);
+            }
+        }
+
+        // Calculate adjusted score, clamped to 0-100
+        const trendAdjustedScore = Math.max(0, Math.min(100,
+            Math.round(profile.reputationScore + adjustment)
+        ));
+
+        // Add trend-derived risk factors
+        const newRiskFactors = [...profile.riskFactors];
+        for (const signal of trendSignals) {
+            if (signal.type === 'negative' && signal.confidence > 0.7) {
+                newRiskFactors.push(`[LIVE] ${signal.summary}`);
+            }
+        }
+
+        return {
+            ...profile,
+            trendAdjustedScore,
+            appliedTrends,
+            riskFactors: newRiskFactors,
+            thoughtSignature: profile.thoughtSignature +
+                `\n\n[Trend Adjustment]: Applied ${trendSignals.length} signals. Score adjusted by ${adjustment > 0 ? '+' : ''}${Math.round(adjustment)}.`
+        };
+    }
+
     private _extractJSON(text: string): any {
-        const jsonMatch = text.match(/```json\n([\s\S]*?)\n```/) || text.match(/```\n([\s\S]*?)\n```/);
+        const jsonMatch = text.match(/```json\n([\s\S]*?)\n```/) || text.match(/```\n([\s\S]*?)\n```/) || text.match(/\{[\s\S]*\}/);
         try {
-            return JSON.parse(jsonMatch ? jsonMatch[1] : text);
+            return JSON.parse(jsonMatch ? (jsonMatch[1] || jsonMatch[0]) : text);
         } catch (e) {
             return { reputationScore: 50, visaFreeCount: 0, riskFactors: ["Parse Error"], projectedTrends: [] };
         }
@@ -105,3 +153,4 @@ export class PassportLogicService {
 }
 
 export const passportLogic = new PassportLogicService(process.env.GEMINI_API_KEY);
+

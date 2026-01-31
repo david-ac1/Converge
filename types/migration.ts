@@ -107,11 +107,15 @@ export interface UserMigrationState {
   activePlan: MigrationPlan | null;
   timeline: YearlySnapshot[]; // 0-10 years
   interviewData: InterviewInsight[];
+  geopoliticalProfile?: GeopoliticalRiskProfile;
   sessionMetadata: {
     createdAt: Date;
     updatedAt: Date;
     lastSimulatedYear: number;
-// ... (previous interfaces)
+    version: string;
+    thoughtSignature?: string;
+  };
+}
 
 export interface GeopoliticalRiskProfile {
   reputationScore: number; // 0-100
@@ -123,24 +127,10 @@ export interface GeopoliticalRiskProfile {
     reasoning: string;
   }[];
   thoughtSignature: string;
+  trendAdjustedScore?: number;
+  appliedTrends?: string[];
 }
 
-export interface UserMigrationState {
-  userId: string;
-  currentState: MigrationSnapshot;
-  goalState: MigrationSnapshot;
-  activePlan: MigrationPlan | null;
-  timeline: YearlySnapshot[];
-  interviewData: InterviewInsight[];
-  geopoliticalProfile?: GeopoliticalRiskProfile; // [NEW] Added for Agent Alpha
-  sessionMetadata: {
-    createdAt: Date;
-    updatedAt: Date;
-    lastSimulatedYear: number;
-    version: string;
-    thoughtSignature?: string;
-  };
-}
 export interface TavusInterviewRequest {
   userId: string;
   interviewType: 'initial' | 'followup' | 'verification';

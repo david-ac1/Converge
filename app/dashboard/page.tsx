@@ -21,21 +21,30 @@ const ConvergenceMap = dynamic(() => import('@/components/ConvergenceMap'), {
     loading: () => <div className="h-full w-full bg-primary/5 animate-pulse" />
 });
 
+// Trends report type
+interface TrendsReport {
+    riskScore: number;
+    opportunityScore: number;
+    recommendation: string;
+    combinedSignals: any[];
+    newsAnalysis?: any;
+}
 
 export default function DashboardPage() {
     const { state, generatePlan, updateGeopoliticalProfile } = useUserMigrationState();
-    const { updateContext } = useTavus();
+    const { updateContext, startConversation } = useTavus();
     const [currentYear, setCurrentYear] = useState(0);
+    const [trendsReport, setTrendsReport] = useState<TrendsReport | null>(null);
+    const [trendsLoading, setTrendsLoading] = useState(false);
 
-    // Auto-generate plan if initialized but no plan
+    // Auto-generate plan and fetch initial data
     useEffect(() => {
         if (state?.currentState && state?.goalState && !state.activePlan) {
             console.log('Auto-triggering migration plan generation...');
             generatePlan(10).catch(err => console.error('Auto-plan failed:', err));
 
             // Trigger Agent Alpha (Passport Analysis)
-            // Use mock ID if not set, or extract from user
-            const passportId = state.currentState.metadata?.citizenship || 'USA'; // Default for demo
+            const passportId = state.currentState.metadata?.citizenship || 'USA';
 
             fetch('/api/passport/analyze', {
                 method: 'POST',
@@ -52,18 +61,40 @@ export default function DashboardPage() {
                     }
                 })
                 .catch(err => console.error('Passport Analysis failed:', err));
+
+            // Fetch Global Trends
+            if (state.goalState.location) {
+                setTrendsLoading(true);
+                fetch('/api/trends', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        origin: state.currentState.location || 'USA',
+                        destination: state.goalState.location,
+                        includeSearchGrounding: true
+                    })
+                })
+                    .then(res => res.json())
+                    .then(data => {
+                        setTrendsReport(data);
+                        console.log('Trends Report:', data);
+                    })
+                    .catch(err => console.error('Trends fetch failed:', err))
+                    .finally(() => setTrendsLoading(false));
+            }
         }
     }, [state?.currentState, state?.goalState, state?.activePlan, generatePlan, updateGeopoliticalProfile]);
 
-    // Update Tavus context when year changes
+    // Update Tavus context when year changes or data updates
     useEffect(() => {
         updateContext({
             focusedYear: currentYear,
             topic: `Discussion about year ${currentYear} of the plan`,
-            // Pass thought signature if available
-            thoughtSignature: state?.sessionMetadata?.thoughtSignature
+            thoughtSignature: state?.sessionMetadata?.thoughtSignature,
+            geopoliticalProfile: state?.geopoliticalProfile,
+            trendsReport: trendsReport
         });
-    }, [currentYear, updateContext, state?.sessionMetadata?.thoughtSignature]);
+    }, [currentYear, updateContext, state?.sessionMetadata?.thoughtSignature, state?.geopoliticalProfile, trendsReport]);
 
     const handleScrubberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const year = parseFloat(e.target.value);
