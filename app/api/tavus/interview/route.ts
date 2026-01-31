@@ -1,72 +1,77 @@
 // API route for Tavus CVI live interview integration
+// Uses Tavus v2 Conversations API
 
 import { NextRequest, NextResponse } from 'next/server';
-import { TavusInterviewRequest, TavusInterviewResponse } from '@/types/migration';
 
 export async function POST(request: NextRequest) {
     try {
-        const body: TavusInterviewRequest = await request.json();
-
-        const { userId, interviewType, context, metadata } = body;
-
-        // Validate required fields
-        if (!userId || !interviewType) {
-            return NextResponse.json(
-                { error: 'Missing required fields: userId and interviewType' },
-                { status: 400 }
-            );
-        }
+        const body = await request.json();
+        const { context, conversationalContext } = body;
 
         const apiKey = process.env.TAVUS_API_KEY;
+        const replicaId = process.env.TAVUS_REPLICA_ID || 'rfe12d8b9597'; // Stock replica
+        const personaId = process.env.TAVUS_PERSONA_ID || 'pdced222244b'; // Stock persona
 
         if (!apiKey) {
             // Return mock response if no API key is configured
             console.warn('No Tavus API key configured. Returning mock response.');
-
-            const mockResponse: TavusInterviewResponse = {
-                sessionId: `mock_session_${Date.now()}`,
-                streamUrl: 'https://mock-tavus-stream.example.com',
-                status: 'initiated',
-                estimatedDuration: 15,
-            };
-
-            return NextResponse.json(mockResponse);
+            return NextResponse.json({
+                url: null,
+                conversation_id: `mock_${Date.now()}`,
+                status: 'mock',
+                message: 'No API key configured - mock mode'
+            });
         }
 
-        // Call Tavus API to initiate interview
-        // Note: This is a placeholder implementation - adjust based on actual Tavus API
-        const tavusResponse = await fetch('https://api.tavus.io/v1/interviews', {
+        // Build the conversation request per Tavus v2 API spec
+        const conversationPayload: any = {
+            replica_id: replicaId,
+            persona_id: personaId,
+        };
+
+        // Add conversational context if provided (thought signature, geopolitical data, etc.)
+        if (conversationalContext) {
+            conversationPayload.conversational_context = conversationalContext;
+        }
+
+        // Add custom greeting if context has user info
+        if (context?.userName) {
+            conversationPayload.custom_greeting = `Hello ${context.userName}, I'm your CONVERGE migration advisor. I've analyzed your passport data and have some strategic insights to share.`;
+        }
+
+        console.log('Calling Tavus API with:', JSON.stringify(conversationPayload, null, 2));
+
+        // Call Tavus v2 Conversations API
+        const tavusResponse = await fetch('https://tavusapi.com/v2/conversations', {
             method: 'POST',
             headers: {
-                'Authorization': `Bearer ${apiKey}`,
                 'Content-Type': 'application/json',
+                'x-api-key': apiKey,
             },
-            body: JSON.stringify({
-                user_id: userId,
-                interview_type: interviewType,
-                context: context,
-                metadata: metadata,
-            }),
+            body: JSON.stringify(conversationPayload),
         });
 
         if (!tavusResponse.ok) {
-            throw new Error(`Tavus API error: ${tavusResponse.statusText}`);
+            const errorText = await tavusResponse.text();
+            console.error('Tavus API Error:', tavusResponse.status, errorText);
+            throw new Error(`Tavus API error: ${tavusResponse.status} - ${errorText}`);
         }
 
         const data = await tavusResponse.json();
 
-        const response: TavusInterviewResponse = {
-            sessionId: data.session_id || data.sessionId,
-            streamUrl: data.stream_url || data.streamUrl,
-            status: data.status || 'initiated',
-            estimatedDuration: data.estimated_duration || data.estimatedDuration || 15,
-        };
+        console.log('Tavus API Response:', data);
 
-        return NextResponse.json(response);
+        // Return the conversation URL for iframe embedding
+        return NextResponse.json({
+            url: data.conversation_url,
+            conversation_id: data.conversation_id,
+            status: 'active'
+        });
+
     } catch (error: any) {
         console.error('Error in /api/tavus/interview:', error);
         return NextResponse.json(
-            { error: error.message || 'Failed to initiate interview' },
+            { error: error.message || 'Failed to initiate conversation', url: null },
             { status: 500 }
         );
     }

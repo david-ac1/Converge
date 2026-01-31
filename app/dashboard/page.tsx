@@ -23,7 +23,7 @@ const ConvergenceMap = dynamic(() => import('@/components/ConvergenceMap'), {
 
 
 export default function DashboardPage() {
-    const { state, generatePlan } = useUserMigrationState();
+    const { state, generatePlan, updateGeopoliticalProfile } = useUserMigrationState();
     const { updateContext } = useTavus();
     const [currentYear, setCurrentYear] = useState(0);
 
@@ -32,16 +32,38 @@ export default function DashboardPage() {
         if (state?.currentState && state?.goalState && !state.activePlan) {
             console.log('Auto-triggering migration plan generation...');
             generatePlan(10).catch(err => console.error('Auto-plan failed:', err));
+
+            // Trigger Agent Alpha (Passport Analysis)
+            // Use mock ID if not set, or extract from user
+            const passportId = state.currentState.metadata?.citizenship || 'USA'; // Default for demo
+
+            fetch('/api/passport/analyze', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    passportId: passportId,
+                    context: { location: state.currentState.location }
+                })
+            })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.reputationScore !== undefined) {
+                        updateGeopoliticalProfile(data);
+                    }
+                })
+                .catch(err => console.error('Passport Analysis failed:', err));
         }
-    }, [state, generatePlan]);
+    }, [state?.currentState, state?.goalState, state?.activePlan, generatePlan, updateGeopoliticalProfile]);
 
     // Update Tavus context when year changes
     useEffect(() => {
         updateContext({
             focusedYear: currentYear,
-            topic: `Discussion about year ${currentYear} of the plan`
+            topic: `Discussion about year ${currentYear} of the plan`,
+            // Pass thought signature if available
+            thoughtSignature: state?.sessionMetadata?.thoughtSignature
         });
-    }, [currentYear, updateContext]);
+    }, [currentYear, updateContext, state?.sessionMetadata?.thoughtSignature]);
 
     const handleScrubberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const year = parseFloat(e.target.value);
@@ -71,7 +93,7 @@ export default function DashboardPage() {
                 <div className="col-span-12 lg:col-span-3 flex flex-col gap-6 h-full overflow-y-auto pr-2 custom-scrollbar">
                     <h2 className="sr-only">Metrics</h2>
                     <div className="h-[400px]">
-                        <DashboardVolatilityRadar />
+                        <DashboardVolatilityRadar riskProfile={state?.geopoliticalProfile} />
                     </div>
 
                     {/* Additional Metric Box */}

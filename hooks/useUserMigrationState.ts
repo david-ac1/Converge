@@ -116,6 +116,12 @@ export function useUserMigrationState() {
         }
     }, []);
 
+    // Update Geopolitical Profile (Agent Alpha)
+    const updateGeopoliticalProfile = useCallback((profile: any) => {
+        stateManager.updateGeopoliticalProfile(profile);
+        setState(stateManager.getState());
+    }, []);
+
     return {
         state,
         isLoading,
@@ -125,6 +131,7 @@ export function useUserMigrationState() {
         addInterviewInsights,
         updateYearlySnapshot,
         updateThoughtSignature,
+        updateGeopoliticalProfile,
         generatePlan,
         clearState,
         exportState,

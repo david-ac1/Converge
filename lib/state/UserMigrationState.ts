@@ -167,6 +167,21 @@ export class UserMigrationStateManager {
     }
 
     /**
+     * Update geopolitical risk profile (Agent Alpha)
+     */
+    public updateGeopoliticalProfile(profile: GeopoliticalRiskProfile): void {
+        if (!this.state) {
+            throw new Error('State not initialized');
+        }
+        this.state.geopoliticalProfile = profile;
+        // Also update the session-level thought signature with this latest reasoning if needed
+        // or keep them separate. The prompt asked to "pass thought signature back to Tavus".
+        // It's accessible via state.geopoliticalProfile.thoughtSignature.
+        this.state.sessionMetadata.updatedAt = new Date();
+        this.saveState();
+    }
+
+    /**
      * Save state to sessionStorage
      */
     private saveState(): void {
