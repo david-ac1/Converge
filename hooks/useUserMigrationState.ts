@@ -51,6 +51,12 @@ export function useUserMigrationState() {
         setState(stateManager.getState());
     }, []);
 
+    // Update thought signature
+    const updateThoughtSignature = useCallback((signature: string) => {
+        stateManager.updateThoughtSignature(signature);
+        setState(stateManager.getState());
+    }, []);
+
     // Clear state
     const clearState = useCallback(() => {
         stateManager.clearState();
@@ -68,6 +74,48 @@ export function useUserMigrationState() {
         setState(stateManager.getState());
     }, []);
 
+    // Generate Plan (API Integration)
+    const generatePlan = useCallback(async (timeframe: number = 10) => {
+        const currentState = stateManager.getState()?.currentState;
+        const goalState = stateManager.getState()?.goalState;
+
+        if (!currentState || !goalState) {
+            throw new Error("Current or Goal state missing");
+        }
+
+        setIsLoading(true);
+        try {
+            const response = await fetch('/api/gemini/plan', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ currentState, goalState, timeframe })
+            });
+
+            if (!response.ok) throw new Error('Plan generation failed');
+
+            const data = await response.json();
+
+            if (data.plan) {
+                stateManager.updatePlan(data.plan);
+            }
+
+            if (data.thoughtSignature) {
+                stateManager.updateThoughtSignature(data.thoughtSignature);
+            } else if (data.reasoning) {
+                // Fallback to reasoning if thoughtSignature absent
+                stateManager.updateThoughtSignature(data.reasoning);
+            }
+
+            setState(stateManager.getState());
+            return data.plan;
+        } catch (error) {
+            console.error(error);
+            throw error;
+        } finally {
+            setIsLoading(false);
+        }
+    }, []);
+
     return {
         state,
         isLoading,
@@ -76,6 +124,8 @@ export function useUserMigrationState() {
         updateCurrentState,
         addInterviewInsights,
         updateYearlySnapshot,
+        updateThoughtSignature,
+        generatePlan,
         clearState,
         exportState,
         importState,

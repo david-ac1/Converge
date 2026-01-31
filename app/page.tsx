@@ -1,11 +1,54 @@
 'use client';
 
 import React from 'react';
-import Link from 'next/link';
-import { motion } from 'framer-motion';
+import { useRouter } from 'next/navigation';
+import { useUserMigrationState } from '@/hooks/useUserMigrationState';
 import PassportSchematic from '@/components/PassportSchematic';
 
 export default function LandingPage() {
+  const router = useRouter();
+  const { initialize, isLoading } = useUserMigrationState();
+
+  const handleInit = () => {
+    // Hackathon Scenario: DevOps Engineer seeking Swiss Residency
+    const startState = {
+      timestamp: new Date(),
+      location: 'Austin, TX, USA',
+      profession: 'Senior DevOps Engineer',
+      income: 145000,
+      skills: ['Kubernetes', 'AWS', 'Python', 'System Architecture'],
+      qualifications: ['B.S. Computer Science'],
+      familyStatus: 'Single',
+      dependencies: 0,
+      assets: 52000,
+      liabilities: 15000,
+      metadata: {
+        citizenship: 'USA',
+        riskTolerance: 'medium'
+      }
+    };
+
+    const goalState = {
+      timestamp: new Date(new Date().setFullYear(new Date().getFullYear() + 5)),
+      location: 'Zurich, Switzerland',
+      profession: 'Cloud Architect',
+      income: 160000, // CHF equivalent approx
+      skills: ['German (B1)', 'European Banking Regulations'],
+      qualifications: ['Masters (Optional)'],
+      familyStatus: 'Single',
+      dependencies: 0,
+      assets: 100000,
+      liabilities: 0,
+      metadata: {
+        targetVisa: 'B Permit / C Settlement',
+        motive: 'Stability & Crypto Industry'
+      }
+    };
+
+    initialize('hackathon_user_01', startState, goalState);
+    router.push('/dashboard');
+  };
+
   return (
     <div className="min-h-screen flex flex-col relative">
       {/* Background Map SVG Overlay (Low opacity) */}
@@ -68,11 +111,12 @@ export default function LandingPage() {
               </p>
             </div>
             <div className="flex flex-col sm:flex-row gap-6 items-center">
-              <Link href="/dashboard" className="w-full sm:w-auto">
-                <button className="w-full sm:w-auto min-w-[240px] bg-primary text-black h-14 px-8 font-mono text-sm font-black tracking-widest hover:bg-white transition-all shadow-[0_0_30px_rgba(0,209,255,0.3)]">
-                  <span className="cursor-blink">INIT_SIM_v1.0</span>
-                </button>
-              </Link>
+              <button
+                onClick={handleInit}
+                className="w-full sm:w-auto min-w-[240px] bg-primary text-black h-14 px-8 font-mono text-sm font-black tracking-widest hover:bg-white transition-all shadow-[0_0_30px_rgba(0,209,255,0.3)]"
+              >
+                <span className="cursor-blink">INIT_SIM_v1.0</span>
+              </button>
               <div className="flex flex-col font-mono text-[10px] text-white/30 gap-1 uppercase tracking-tighter">
                 <span>// LOAD_VECTOR: 233ms</span>
                 <span>// BUFFER_SYNC: OK</span>

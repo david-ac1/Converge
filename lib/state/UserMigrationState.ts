@@ -33,6 +33,7 @@ const UserMigrationStateSchema = z.object({
         updatedAt: z.coerce.date(),
         lastSimulatedYear: z.number(),
         version: z.string(),
+        thoughtSignature: z.string().optional(), // Latest thought signature from Gemini
     }),
 });
 
@@ -74,6 +75,7 @@ export class UserMigrationStateManager {
                 updatedAt: now,
                 lastSimulatedYear: 0,
                 version: STATE_VERSION,
+                thoughtSignature: undefined,
             },
         };
 
@@ -147,6 +149,19 @@ export class UserMigrationStateManager {
             this.state.sessionMetadata.lastSimulatedYear,
             year
         );
+        this.state.sessionMetadata.updatedAt = new Date();
+        this.saveState();
+    }
+
+    /**
+     * Update latest thought signature
+     */
+    public updateThoughtSignature(signature: string): void {
+        if (!this.state) {
+            throw new Error('State not initialized');
+        }
+
+        this.state.sessionMetadata.thoughtSignature = signature;
         this.state.sessionMetadata.updatedAt = new Date();
         this.saveState();
     }

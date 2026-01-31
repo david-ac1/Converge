@@ -112,6 +112,7 @@ export interface UserMigrationState {
     updatedAt: Date;
     lastSimulatedYear: number;
     version: string;
+    thoughtSignature?: string;
   };
 }
 

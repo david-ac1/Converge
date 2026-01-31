@@ -9,6 +9,7 @@ import "./globals.css";
 // Let's check if 'Inter_Tight' is importable. It usually is.
 
 import { Inter_Tight } from "next/font/google";
+import { TavusProvider } from "@/components/providers/TavusProvider";
 
 const interTight = Inter_Tight({
   subsets: ["latin"],
@@ -40,7 +41,9 @@ export default function RootLayout({
       <body className={`${interTight.variable} ${jetbrainsMono.variable} antialiased bg-background text-foreground font-display selection:bg-primary/20 selection:text-white overflow-x-hidden`}>
         {/* Background Grid Layer */}
         <div className="fixed inset-0 pointer-events-none z-[-1] bg-blueprint-grid bg-[length:40px_40px]"></div>
-        {children}
+        <TavusProvider>
+          {children}
+        </TavusProvider>
       </body>
     </html>
   );

@@ -33,7 +33,8 @@ export async function POST(request: NextRequest) {
         // Construct response
         const response = {
             plan,
-            reasoning: 'Generated using Gemini 3 API for goal-conditioned planning',
+            reasoning: plan._thoughtSignature || 'Generated using Gemini 3 API for goal-conditioned planning',
+            thoughtSignature: plan._thoughtSignature, // Explicit thought signature field
             alternativeStrategies: [],
             risks: [],
             confidence: plan.successProbability || 0.75,
