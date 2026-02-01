@@ -32,10 +32,10 @@ interface TrendsReport {
 
 export default function DashboardPage() {
     const { state, generatePlan, updateGeopoliticalProfile } = useUserMigrationState();
-    const { updateContext, startConversation } = useTavus();
+    const { updateContext } = useTavus();
     const [currentYear, setCurrentYear] = useState(0);
     const [trendsReport, setTrendsReport] = useState<TrendsReport | null>(null);
-    const [trendsLoading, setTrendsLoading] = useState(false);
+    const [, setTrendsLoading] = useState(false);
 
     // Auto-generate plan and fetch initial data
     useEffect(() => {

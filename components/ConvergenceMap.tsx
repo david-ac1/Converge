@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useRef, useState, useEffect } from 'react';
-import { motion, useAnimation, PanInfo } from 'framer-motion';
+import { motion, PanInfo } from 'framer-motion';
 import { MigrationPlan, MigrationStep } from '@/types/migration';
 
 interface ConvergenceMapProps {
@@ -280,7 +280,7 @@ function getStatusFill(status: string) {
     return '#0D0D0D';
 }
 
-function ZoomButton({ label, onClick, width = '8' }: { label: string, onClick: () => void, width?: string }) {
+function ZoomButton({ label, onClick, width: _width = '8' }: { label: string, onClick: () => void, width?: string }) {
     return (
         <button
             onClick={onClick}

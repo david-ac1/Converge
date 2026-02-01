@@ -7,7 +7,7 @@ import PassportSchematic from '@/components/PassportSchematic';
 
 export default function LandingPage() {
   const router = useRouter();
-  const { initialize, isLoading } = useUserMigrationState();
+  const { initialize } = useUserMigrationState();
 
   const handleInit = () => {
     // Hackathon Scenario: DevOps Engineer seeking Swiss Residency
@@ -118,9 +118,9 @@ export default function LandingPage() {
                 <span className="cursor-blink">INIT_SIM_v1.0</span>
               </button>
               <div className="flex flex-col font-mono text-[10px] text-white/30 gap-1 uppercase tracking-tighter">
-                <span>// LOAD_VECTOR: 233ms</span>
-                <span>// BUFFER_SYNC: OK</span>
-                <span>// LAT_COORD: 51.5074 N</span>
+                <span>{'// LOAD_VECTOR: 233ms'}</span>
+                <span>{'// BUFFER_SYNC: OK'}</span>
+                <span>{'// LAT_COORD: 51.5074 N'}</span>
               </div>
             </div>
           </div>

@@ -4,7 +4,7 @@ import { useTavus } from './providers/TavusProvider';
 import { useState } from 'react';
 
 export default function ExpertHub() {
-    const { conversationUrl, startConversation, endConversation, isReady } = useTavus();
+    const { conversationUrl, startConversation, endConversation } = useTavus();
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 

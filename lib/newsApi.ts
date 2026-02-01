@@ -20,7 +20,7 @@ interface NewsResponse {
 }
 
 // Cache to avoid hitting API limits
-let newsCache: Map<string, { data: NewsResponse; expiry: number }> = new Map();
+const newsCache: Map<string, { data: NewsResponse; expiry: number }> = new Map();
 const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
 
 export class NewsApiService {

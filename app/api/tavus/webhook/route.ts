@@ -24,7 +24,7 @@ export async function POST(request: NextRequest) {
 
         const payload: TavusWebhookPayload = await request.json();
 
-        const { sessionId, event, timestamp, data } = payload;
+        const { sessionId, event, data } = payload;
 
         console.log(`Received Tavus webhook - Session: ${sessionId}, Event: ${event}`);
 
@@ -79,7 +79,7 @@ export async function POST(request: NextRequest) {
     }
 }
 
-export async function GET(request: NextRequest) {
+export async function GET(_request: NextRequest) {
     return NextResponse.json({
         message: 'Tavus Webhook Endpoint',
         version: '1.0.0',

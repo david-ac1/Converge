@@ -133,12 +133,12 @@ export class PassportLogicService {
         const jsonMatch = text.match(/```json\n([\s\S]*?)\n```/) || text.match(/```\n([\s\S]*?)\n```/) || text.match(/\{[\s\S]*\}/);
         try {
             return JSON.parse(jsonMatch ? (jsonMatch[1] || jsonMatch[0]) : text);
-        } catch (e) {
+        } catch {
             return { reputationScore: 50, visaFreeCount: 0, riskFactors: ["Parse Error"], projectedTrends: [] };
         }
     }
 
-    private _mockAnalysis(passportId: string): GeopoliticalRiskProfile {
+    private _mockAnalysis(_passportId: string): GeopoliticalRiskProfile {
         // Mock data for development
         return {
             reputationScore: 78,
