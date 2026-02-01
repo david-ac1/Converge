@@ -1,6 +1,6 @@
 // Central state management for user migration data with session persistence
 
-import { UserMigrationState, MigrationSnapshot, MigrationPlan, YearlySnapshot, InterviewInsight } from '@/types/migration';
+import { UserMigrationState, MigrationSnapshot, MigrationPlan, YearlySnapshot, InterviewInsight, GeopoliticalRiskProfile } from '@/types/migration';
 import { z } from 'zod';
 
 const STORAGE_KEY = 'converge_user_migration_state';
