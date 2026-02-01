@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import dynamic from 'next/dynamic';
+import Link from 'next/link';
 import { useUserMigrationState } from '@/hooks/useUserMigrationState';
 import { useTavus } from '@/components/providers/TavusProvider';
 
@@ -127,7 +128,7 @@ export default function DashboardPage() {
             {/* Top Navigation */}
             <header className="h-14 border-b border-primary/10 flex items-center justify-between px-6 bg-background/80 backdrop-blur-md z-40 sticky top-0">
                 <div className="flex items-center gap-4">
-                    <div className="font-display font-black tracking-tight text-lg text-white uppercase">CONVERGE</div>
+                    <Link href="/" className="font-display font-black tracking-tight text-lg text-white uppercase hover:text-primary transition-colors">CONVERGE</Link>
                     <div className="h-4 w-px bg-primary/20"></div>
                     <div className="font-mono text-[10px] text-primary/60 tracking-widest uppercase">/ SIMULATION_DASHBOARD</div>
                 </div>

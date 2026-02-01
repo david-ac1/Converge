@@ -33,7 +33,7 @@ export async function POST(request: NextRequest) {
         console.log(`Received Tavus webhook - Session: ${sessionId}, Event: ${event}`);
 
         // Get or create conversation record
-        let conversation = conversationStore.get(sessionId) || { transcript: '', status: 'started' };
+        const conversation = conversationStore.get(sessionId) || { transcript: '', status: 'started' };
 
         // Process different event types
         switch (event) {
