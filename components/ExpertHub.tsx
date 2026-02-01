@@ -42,7 +42,7 @@ export default function ExpertHub({ onOnboardingComplete }: ExpertHubProps) {
                     </h3>
                 </div>
                 <div className="font-mono text-[9px] text-primary/40">
-                    {conversationUrl ? 'LIVE' : isPolling ? 'PROCESSING' : 'ARIA_v1.0'}
+                    {conversationUrl ? 'LIVE' : isPolling ? 'PROCESSING' : 'CONVERGENCE_v1'}
                 </div>
             </div>
 
@@ -107,7 +107,7 @@ export default function ExpertHub({ onOnboardingComplete }: ExpertHubProps) {
                                 <div className="text-red-500">{error}</div>
                             ) : (
                                 <>
-                                    <div>Talk to ARIA to start your journey</div>
+                                    <div>Talk to Convergence to start</div>
                                     <div className="text-primary font-bold mt-1">STANDBY_MODE</div>
                                 </>
                             )}

@@ -45,7 +45,7 @@ export class OnboardingProcessor {
 
         try {
             const prompt = `
-Extract the following information from this conversation transcript between an AI advisor (ARIA) and a user.
+Extract the following information from this conversation transcript between an AI advisor (Convergence) and a user.
 
 TRANSCRIPT:
 ${transcript}

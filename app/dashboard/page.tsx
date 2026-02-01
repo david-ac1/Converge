@@ -156,7 +156,7 @@ export default function DashboardPage() {
                             <div className="flex gap-2"><span className="text-primary/30">[SYS]</span> CONVERGE_INIT_COMPLETE</div>
                             {state?.sessionMetadata?.thoughtSignature ? (
                                 <>
-                                    <div className="flex gap-2"><span className="text-primary/30">[ARIA]</span> ONBOARDING_COMPLETE</div>
+                                    <div className="flex gap-2"><span className="text-primary/30">[CONV]</span> ONBOARDING_COMPLETE</div>
                                     <div className="flex gap-2"><span className="text-primary/30">[DATA]</span> USER_PROFILE_CAPTURED</div>
                                     {state?.activePlan ? (
                                         <>
@@ -168,7 +168,7 @@ export default function DashboardPage() {
                                     )}
                                 </>
                             ) : (
-                                <div className="flex gap-2 animate-pulse text-primary"><span className="text-primary/30">[ARIA]</span> AWAITING_ONBOARDING...</div>
+                                <div className="flex gap-2 animate-pulse text-primary"><span className="text-primary/30">[CONV]</span> AWAITING_ONBOARDING...</div>
                             )}
                         </div>
                     </div>
