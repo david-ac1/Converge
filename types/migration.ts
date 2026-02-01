@@ -44,6 +44,7 @@ export interface MigrationPlan {
   successProbability: number;
   recommendationScore?: number;
   recommendationSummary?: string;
+  alternatives?: { country: string; reason: string; difficulty: 'low' | 'medium' | 'high' }[];
   criticalPath: string[]; // step IDs in critical path
   createdAt: Date;
   updatedAt: Date;

@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { useUserMigrationState } from '@/hooks/useUserMigrationState';
 import { PassportHolograph } from '@/components/PassportHolograph';
 import { MilestoneModal } from '@/components/MilestoneModal';
+import { AlternativesPanel } from '@/components/AlternativesPanel';
 import { MigrationStep } from '@/types/migration';
 
 // Dynamic imports for dashboard components
@@ -34,7 +35,7 @@ interface TrendsReport {
 }
 
 export default function DashboardPage() {
-    const { state, generatePlan, updateGeopoliticalProfile, initialize, updateThoughtSignature, initializeSimulation } = useUserMigrationState();
+    const { state, generatePlan, updateGeopoliticalProfile, initialize, updateThoughtSignature, initializeSimulation, clearState, switchDestination, isLoading: isStateLoading } = useUserMigrationState();
     const [currentYear, setCurrentYear] = useState(0);
     const [trendsReport, setTrendsReport] = useState<TrendsReport | null>(null);
     const [, setTrendsLoading] = useState(false);
@@ -196,10 +197,30 @@ export default function DashboardPage() {
                         </span>
                     </div>
                 )}
-                <div className="flex items-center gap-6 font-mono text-[10px] text-primary/40 uppercase">
-                    <span>RAM: 64%</span>
-                    <span>CPU: 12%</span>
-                    <span className="text-primary">NET: SECURE</span>
+                <div className="flex items-center gap-4">
+                    {state?.activePlan && (
+                        <button
+                            onClick={() => {
+                                if (confirm("Clear current simulation and reset?")) {
+                                    clearState();
+                                    window.location.reload();
+                                }
+                            }}
+                            className="px-3 py-1 border border-red-500/30 text-red-400 hover:bg-red-500/10 text-[9px] font-mono uppercase transition-colors rounded-sm"
+                        >
+                            CLEAR_VECTOR
+                        </button>
+                    )}
+                    {isStateLoading && (
+                        <div className="flex items-center gap-2 px-3 py-1 bg-primary/10 border border-primary/30 rounded-full animate-pulse">
+                            <span className="font-mono text-[10px] text-primary uppercase">Pivoting_Trajectory...</span>
+                        </div>
+                    )}
+                    <div className="flex items-center gap-6 font-mono text-[10px] text-primary/40 uppercase">
+                        <span>RAM: 64%</span>
+                        <span>CPU: 12%</span>
+                        <span className="text-primary">NET: SECURE</span>
+                    </div>
                 </div>
             </header>
 
@@ -289,6 +310,14 @@ export default function DashboardPage() {
                             <PassportHolograph origin={originPassport} target={targetPassport} />
                         </div>
                     )}
+
+                    {/* Alternatives Panel */}
+                    <AlternativesPanel
+                        alternatives={state?.activePlan?.alternatives || null}
+                        onSelect={(country) => switchDestination(country)}
+                        isLoading={isStateLoading}
+                    />
+
                     <div className="flex-1 overflow-hidden">
                         <DashboardExpertHub onOnboardingComplete={handleOnboardingComplete} />
                     </div>

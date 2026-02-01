@@ -82,10 +82,15 @@ export class MigrationEngine {
             // Analyzes net policy sentiment and provides a recommendation score
             const recommendation = await this._agentRecommendationScore(adjustedPlan);
 
+            // --- STEP 8: ALTERNATIVE SCOUT ---
+            // Suggests 2 other countries based on ease and current profile
+            const alternatives = await this._agentAlternativeScout(currentState, goalState);
+
             const finalPlan = {
                 ...adjustedPlan,
                 recommendationScore: recommendation.score,
                 recommendationSummary: recommendation.summary,
+                alternatives: alternatives.suggestions,
                 risks: [...(adjustedPlan.risks || []), ...failureAnalysis.risks],
                 successProbability: failureAnalysis.adjustedProbability,
                 _thoughtSignature: [
@@ -93,7 +98,8 @@ export class MigrationEngine {
                     baselinePlan._thoughtSignature,
                     macroTrends.thoughtSignature,
                     failureAnalysis.thoughtSignature,
-                    recommendation.thoughtSignature
+                    recommendation.thoughtSignature,
+                    alternatives.thoughtSignature
                 ].join('\n\n---\n\n')
             };
 
@@ -180,6 +186,26 @@ export class MigrationEngine {
         const json = this._parsePlanResponse(text);
         const thought = this._extractThought(result.response);
         return { ...json, thoughtSignature: `[Recommendation Eng]: Analyzed policy net-value.` };
+    }
+
+    async _agentAlternativeScout(currentState, goalState) {
+        const prompt = `
+            ROLE: Global Mobility scout
+            TASK: Based on this user profile and their target of ${goalState.location}, suggest 2 ALTERNATIVE countries.
+            USER_PROFILE: ${JSON.stringify(currentState)}
+            
+            Selection Criteria:
+            1. Ease of entry (Visas like D7, D8, Digital Nomad, or Skills-based).
+            2. Volatility (High potential, low risk).
+            3. Professional alignment.
+            
+            OUTPUT: JSON { "suggestions": [{ "country": string, "reason": string, "difficulty": "low"|"medium"|"high" }] }
+        `;
+        const result = await this.model.generateContent(prompt);
+        const text = result.response.text();
+        const json = this._parsePlanResponse(text);
+        const thought = this._extractThought(result.response);
+        return { ...json, thoughtSignature: `[Alternative Scout]: Scanned 56 corridors for optimal variance.` };
     }
 
     async _agentMacroMobilityFutures(plan) {

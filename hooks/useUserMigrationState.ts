@@ -151,6 +151,28 @@ export function useUserMigrationState() {
         }
     }, [generatePlan]);
 
+    // Switch destination and re-generate
+    const switchDestination = useCallback(async (newCountry: string) => {
+        const currentState = stateManager.getState()?.currentState;
+        if (!currentState) return;
+
+        const newGoal = {
+            ...stateManager.getState()?.goalState,
+            location: newCountry,
+            timestamp: new Date()
+        } as MigrationSnapshot;
+
+        setIsLoading(true);
+        try {
+            stateManager.initializeState(state?.userId || 'user', currentState, newGoal);
+            stateManager.updateThoughtSignature(`Trajectory Pivot: Switching to ${newCountry} corridor...`);
+            setState(stateManager.getState());
+            await generatePlan(10);
+        } finally {
+            setIsLoading(false);
+        }
+    }, [state?.userId, generatePlan]);
+
     return {
         state,
         isLoading,
@@ -166,5 +188,6 @@ export function useUserMigrationState() {
         exportState,
         importState,
         initializeSimulation,
+        switchDestination,
     };
 }
