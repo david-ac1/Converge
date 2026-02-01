@@ -38,7 +38,7 @@ export class PassportLogicService {
 
     async analyzePassport(passportId: string, currentContext: any): Promise<GeopoliticalRiskProfile> {
         if (!this.model) {
-            return this._mockAnalysis(passportId);
+            return this._mockAnalysis();
         }
 
         try {
@@ -78,7 +78,7 @@ export class PassportLogicService {
 
         } catch (error) {
             console.error("PassportLogic Analysis Failed:", error);
-            return this._mockAnalysis(passportId);
+            return this._mockAnalysis();
         }
     }
 
@@ -173,7 +173,7 @@ export class PassportLogicService {
         }
     }
 
-    private _mockAnalysis(_passportId: string): GeopoliticalRiskProfile {
+    private _mockAnalysis(): GeopoliticalRiskProfile {
         // Mock data for development
         return {
             reputationScore: 78,

@@ -268,7 +268,7 @@ export default function ConvergenceMap({
             <div className="absolute bottom-4 right-4 flex gap-2">
                 <ZoomButton label="+" onClick={() => setScale(s => Math.min(3, s * 1.2))} />
                 <ZoomButton label="-" onClick={() => setScale(s => Math.max(0.5, s * 0.8))} />
-                <ZoomButton label="RST" onClick={() => { setScale(1); setPan({ x: 0, y: 0 }); }} width="auto" />
+                <ZoomButton label="RST" onClick={() => { setScale(1); setPan({ x: 0, y: 0 }); }} />
             </div>
         </div>
     );
@@ -280,7 +280,7 @@ function getStatusFill(status: string) {
     return '#0D0D0D';
 }
 
-function ZoomButton({ label, onClick, width: _width = '8' }: { label: string, onClick: () => void, width?: string }) {
+function ZoomButton({ label, onClick }: { label: string, onClick: () => void }) {
     return (
         <button
             onClick={onClick}

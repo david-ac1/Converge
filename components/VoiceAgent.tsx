@@ -30,7 +30,6 @@ export function VoiceAgent({ onTranscriptUpdate, onSessionEnd, onError }: VoiceA
     const sessionRef = useRef<GeminiLiveSession | null>(null);
     const audioContextRef = useRef<AudioContext | null>(null);
     const mediaStreamRef = useRef<MediaStream | null>(null);
-    const workletNodeRef = useRef<AudioWorkletNode | null>(null);
     const audioQueueRef = useRef<ArrayBuffer[]>([]);
     const isPlayingRef = useRef(false);
 

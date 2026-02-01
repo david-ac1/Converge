@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import Image from 'next/image';
 
 interface PassportData {
     country: string;
@@ -80,9 +81,12 @@ export function PassportHolograph({ origin, target }: PassportHolographProps) {
 
                         {/* UNIVERSAL CREST: Global Mobility Emblem */}
                         <div className="relative size-28 my-1 flex items-center justify-center">
-                            <img
+                            <Image
                                 src={crestPath}
                                 alt="Universal Crest"
+                                width={112}
+                                height={112}
+                                unoptimized
                                 className="w-full h-full object-contain filter brightness-[1.3] contrast-[1.1] drop-shadow-[0_4px_4px_rgba(0,0,0,0.6)]"
                                 style={{
                                     // Applying a gold foil effect via composite filters

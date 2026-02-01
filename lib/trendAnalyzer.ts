@@ -39,7 +39,6 @@ export class TrendAnalyzer {
                 model: 'gemini-3-pro-preview',
                 tools: [
                     {
-                        // @ts-ignore - Updated Google Search tool key
                         googleSearch: {},
                     },
                 ] as any,

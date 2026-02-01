@@ -59,7 +59,7 @@ export function MilestoneModal({ step, onClose }: MilestoneModalProps) {
                                 {/* Audio Summary Script */}
                                 <div className="p-3 bg-primary/5 border border-primary/20 rounded-md italic">
                                     <div className="text-[9px] font-mono text-primary/60 mb-2 uppercase not-italic">AI_Synthesis // Audio_Trace</div>
-                                    <p className="text-xs text-primary/90">"{proof.audioScript}"</p>
+                                    <p className="text-xs text-primary/90">&quot;{proof.audioScript}&quot;</p>
                                 </div>
 
                                 {/* News Evidence */}
@@ -84,7 +84,7 @@ export function MilestoneModal({ step, onClose }: MilestoneModalProps) {
                             <div>
                                 <div className="text-[10px] font-mono text-primary/40 mb-1 uppercase tracking-widest">Sentiment</div>
                                 <div className={`text-xs font-mono uppercase ${proof?.sentiment === 'favorable' ? 'text-green-400' :
-                                        proof?.sentiment === 'blocking' ? 'text-red-400' : 'text-primary'
+                                    proof?.sentiment === 'blocking' ? 'text-red-400' : 'text-primary'
                                     }`}>
                                     {proof?.sentiment || 'Neutral'}
                                 </div>

@@ -82,8 +82,7 @@ export class GlobalTrendsEngine {
         // Step 6: Generate recommendation
         const recommendation = this._generateRecommendation(
             riskScore,
-            opportunityScore,
-            combinedSignals
+            opportunityScore
         );
 
         return {
@@ -136,8 +135,7 @@ export class GlobalTrendsEngine {
 
     private _generateRecommendation(
         riskScore: number,
-        opportunityScore: number,
-        _signals: TrendSignal[]
+        opportunityScore: number
     ): string {
         const netScore = opportunityScore - riskScore;
 

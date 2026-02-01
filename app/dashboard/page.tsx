@@ -35,9 +35,8 @@ interface TrendsReport {
 }
 
 export default function DashboardPage() {
-    const { state, generatePlan, updateGeopoliticalProfile, initialize, updateThoughtSignature, initializeSimulation, clearState, switchDestination, isLoading: isStateLoading } = useUserMigrationState();
+    const { state, generatePlan, updateGeopoliticalProfile, initialize, initializeSimulation, clearState, switchDestination, isLoading: isStateLoading } = useUserMigrationState();
     const [currentYear, setCurrentYear] = useState(0);
-    const [trendsReport, setTrendsReport] = useState<TrendsReport | null>(null);
     const [, setTrendsLoading] = useState(false);
     const [selectedStep, setSelectedStep] = useState<MigrationStep | null>(null);
     const [originPassport, setOriginPassport] = useState<any>(null);
@@ -141,7 +140,6 @@ export default function DashboardPage() {
                 })
                     .then(res => res.json())
                     .then(data => {
-                        setTrendsReport(data);
                         console.log('Trends Report:', data);
                     })
                     .catch(err => console.error('Trends fetch failed:', err))

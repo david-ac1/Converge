@@ -32,7 +32,7 @@ export async function POST(request: NextRequest) {
         // 3. History should exclude the latest message (it's sent in sendMessage)
         const historyMessages = isFirstMessage ? [] : messages.slice(0, -1);
 
-        let history = historyMessages.map((msg: { role: string; content: string }) => ({
+        const history = historyMessages.map((msg: { role: string; content: string }) => ({
             role: msg.role === 'user' ? 'user' : 'model',
             parts: [{ text: msg.content }],
         }));
