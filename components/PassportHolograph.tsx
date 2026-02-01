@@ -23,7 +23,7 @@ export function PassportHolograph({ origin, target }: PassportHolographProps) {
 
         const interval = setInterval(() => {
             setIsFlipped(prev => !prev);
-        }, 5000); // Flip every 5 seconds
+        }, 7000); // 7 seconds for a relaxed flip
 
         return () => clearInterval(interval);
     }, [origin, target]);
@@ -32,54 +32,91 @@ export function PassportHolograph({ origin, target }: PassportHolographProps) {
 
     const current = isFlipped ? target : origin;
 
+    // Use the absolute path provided by the generate_image tool
+    const crestPath = "/api/media?path=C:/Users/david/.gemini/antigravity/brain/a6a0409d-af30-432f-bffb-5fb9414c0cfa/global_mobility_crest_1769965558772.png";
+
     return (
-        <div className="relative w-full h-[180px] perspective-[1000px] flex items-center justify-center">
+        <div className="relative w-full h-[230px] perspective-[1000px] flex items-center justify-center">
             <AnimatePresence mode="wait">
                 <motion.div
                     key={current.country}
                     initial={{ rotateY: isFlipped ? -90 : 90, opacity: 0 }}
                     animate={{ rotateY: 0, opacity: 1 }}
                     exit={{ rotateY: isFlipped ? 90 : -90, opacity: 0 }}
-                    transition={{ duration: 0.8, ease: "easeInOut" }}
-                    className="relative w-[120px] h-[170px] rounded-lg shadow-2xl border border-white/20 overflow-hidden flex flex-col"
+                    transition={{ duration: 1.4, ease: [0.23, 1, 0.32, 1] }}
+                    className="relative w-[160px] h-[220px] rounded-[3px] shadow-[0_25px_50px_-12px_rgba(0,0,0,0.7)] overflow-hidden flex flex-col group cursor-pointer"
                     style={{
-                        background: `linear-gradient(135deg, ${current.color} 0%, #000 100%)`,
-                        boxShadow: `0 0 20px ${current.color}44`
+                        backgroundColor: current.color,
+                        backgroundImage: `url("https://www.transparenttextures.com/patterns/leather.png")`,
+                        boxShadow: `inset 0 0 80px rgba(0,0,0,0.6), 0 20px 40px rgba(0,0,0,0.5)`
                     }}
                 >
-                    {/* Glassmorphism Shine */}
-                    <div className="absolute inset-0 bg-gradient-to-tr from-white/10 to-transparent pointer-events-none" />
+                    {/* Spine highlight */}
+                    <div className="absolute inset-y-0 left-0 w-[2px] bg-white/5 z-20" />
 
-                    {/* Holographic Scanline */}
-                    <div className="absolute inset-x-0 top-0 h-[2px] bg-primary/40 animate-scanline pointer-events-none" />
+                    {/* Foil Shine - Continuous slow sweep */}
+                    <motion.div
+                        animate={{
+                            x: ['-100%', '300%'],
+                            opacity: [0, 0.4, 0]
+                        }}
+                        transition={{
+                            duration: 6,
+                            repeat: Infinity,
+                            ease: "easeInOut",
+                            repeatDelay: 2
+                        }}
+                        className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent skew-x-12 z-20 pointer-events-none"
+                    />
 
-                    {/* Passport Content */}
-                    <div className="flex-1 p-3 flex flex-col items-center justify-between z-10">
-                        <div className="w-full">
-                            <div className="text-[10px] font-mono text-white/40 uppercase tracking-tighter">
-                                {isFlipped ? 'TARGET_NATION' : 'CITIZEN_OF'}
-                            </div>
-                            <div className="text-sm font-display font-bold text-white truncate w-full">
+                    {/* Passport Content Area */}
+                    <div className="flex-1 p-5 flex flex-col items-center justify-between z-10">
+                        {/* HEADER: Country Name - Authentic Passport Style */}
+                        <div className="w-full text-center mt-2">
+                            <h4 className="text-[13px] font-display font-black text-[#D4AF37] leading-tight uppercase tracking-[0.25em] drop-shadow-[0_1.5px_1px_rgba(0,0,0,0.6)] subpixel-antialiased">
                                 {current.country}
-                            </div>
+                            </h4>
                         </div>
 
-                        {/* Symbolic Emblem */}
-                        <div className="size-12 rounded-full border border-white/20 flex items-center justify-center opacity-60">
-                            <svg viewBox="0 0 24 24" className="size-8 text-white fill-current">
-                                <path d="M12,2A10,10,0,1,0,22,12,10,10,0,0,0,12,2Zm0,18a8,8,0,1,1,8-8A8,8,0,0,1,12,20Z" />
-                                <path d="M12,6a6,6,0,1,0,6,6A6,6,0,0,0,12,6Zm0,10a4,4,0,1,1,4-4A4,4,0,0,1,12,16Z" opacity="0.5" />
-                            </svg>
+                        {/* UNIVERSAL CREST: Global Mobility Emblem */}
+                        <div className="relative size-28 my-1 flex items-center justify-center">
+                            <img
+                                src={crestPath}
+                                alt="Universal Crest"
+                                className="w-full h-full object-contain filter brightness-[1.3] contrast-[1.1] drop-shadow-[0_4px_4px_rgba(0,0,0,0.6)]"
+                                style={{
+                                    // Applying a gold foil effect via composite filters
+                                    filter: 'sepia(0.8) saturate(10) hue-rotate(-15deg) brightness(1.2)'
+                                }}
+                            />
                         </div>
 
-                        <div className="w-full border-t border-white/10 pt-2 flex justify-between items-end">
-                            <div>
-                                <div className="text-[8px] font-mono text-white/40 uppercase">Henley_Rank</div>
-                                <div className="text-xs font-mono font-bold text-primary">#{current.rank}</div>
+                        {/* FOOTER: Type and Biometric */}
+                        <div className="w-full text-center space-y-5 mb-2">
+                            <div className="text-[11px] font-display font-black text-[#D4AF37] uppercase tracking-[0.4em] drop-shadow-[0_1px_1px_rgba(0,0,0,0.6)] opacity-95">
+                                PASSPORT
                             </div>
-                            <div className="text-right">
-                                <div className="text-[8px] font-mono text-white/40 uppercase">Visa_Free</div>
-                                <div className="text-xs font-mono font-bold text-white">{current.visaFree}</div>
+
+                            {/* Biometric Iconography (Classic e-Passport symbol) */}
+                            <div className="flex justify-center opacity-70 scale-90">
+                                <div className="w-7 h-4 border-[1.5px] border-[#D4AF37] rounded-sm flex items-center justify-center relative">
+                                    <div className="w-2.5 h-2.5 bg-[#D4AF37] rounded-full shadow-inner" />
+                                    <div className="absolute inset-x-0 h-[1.5px] bg-[#D4AF37] top-1/2 -translate-y-1/2" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* INTERACTIVE OVERLAY: Henley Technical Data */}
+                    <div className="absolute inset-x-0 bottom-0 bg-black/70 backdrop-blur-lg p-2 translate-y-full group-hover:translate-y-0 transition-transform duration-500 cubic-bezier(0.23, 1, 0.32, 1) border-t border-[#D4AF37]/30 z-30">
+                        <div className="flex justify-between items-center font-mono text-[9px] px-1">
+                            <div className="flex flex-col">
+                                <span className="text-primary/60 text-[7px] uppercase tracking-tighter">Henley_Rank</span>
+                                <span className="text-primary font-bold">#{current.rank}</span>
+                            </div>
+                            <div className="flex flex-col text-right">
+                                <span className="text-[#D4AF37]/60 text-[7px] uppercase tracking-tighter">Mobility_Score</span>
+                                <span className="text-[#D4AF37] font-bold">{current.visaFree} DEST.</span>
                             </div>
                         </div>
                     </div>
@@ -87,13 +124,6 @@ export function PassportHolograph({ origin, target }: PassportHolographProps) {
             </AnimatePresence>
 
             <style jsx global>{`
-                @keyframes scanline {
-                    0% { top: 0; }
-                    100% { top: 100%; }
-                }
-                .animate-scanline {
-                    animation: scanline 3s linear infinite;
-                }
                 .perspective-[1000px] {
                     perspective: 1000px;
                 }
