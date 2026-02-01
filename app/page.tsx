@@ -8,10 +8,77 @@ import PassportSchematic from '@/components/PassportSchematic';
 export default function LandingPage() {
   const router = useRouter();
   const { initialize } = useUserMigrationState();
+  const [activeCountryIdx, setActiveCountryIdx] = React.useState(0);
 
-  const handleInit = () => {
-    // Hackathon Scenario: DevOps Engineer seeking Swiss Residency
-    const startState = {
+  const countries = [
+    // TOP 10
+    { code: 'sg', name: 'Singapore', nodes: 195, power: 99.4 },
+    { code: 'jp', name: 'Japan', nodes: 193, power: 98.5 },
+    { code: 'de', name: 'Germany', nodes: 192, power: 97.9 },
+    { code: 'fr', name: 'France', nodes: 192, power: 97.9 },
+    { code: 'it', name: 'Italy', nodes: 192, power: 97.9 },
+    { code: 'es', name: 'Spain', nodes: 192, power: 97.9 },
+    { code: 'kr', name: 'South Korea', nodes: 191, power: 97.4 },
+    { code: 'fi', name: 'Finland', nodes: 191, power: 97.4 },
+    { code: 'at', name: 'Austria', nodes: 190, power: 96.9 },
+    { code: 'se', name: 'Sweden', nodes: 190, power: 96.9 },
+    // 11-20
+    { code: 'gb', name: 'United Kingdom', nodes: 189, power: 96.4 },
+    { code: 'us', name: 'USA', nodes: 186, power: 94.8 },
+    { code: 'au', name: 'Australia', nodes: 186, power: 94.8 },
+    { code: 'nz', name: 'New Zealand', nodes: 186, power: 94.8 },
+    { code: 'ae', name: 'UAE', nodes: 185, power: 94.3 },
+    { code: 'ch', name: 'Switzerland', nodes: 184, power: 93.8 },
+    { code: 'ca', name: 'Canada', nodes: 184, power: 93.8 },
+    { code: 'pt', name: 'Portugal', nodes: 187, power: 95.3 },
+    { code: 'nl', name: 'Netherlands', nodes: 190, power: 96.9 },
+    { code: 'be', name: 'Belgium', nodes: 189, power: 96.4 },
+    // 21-30 (MID TIER)
+    { code: 'my', name: 'Malaysia', nodes: 182, power: 92.8 },
+    { code: 'br', name: 'Brazil', nodes: 170, power: 86.7 },
+    { code: 'mx', name: 'Mexico', nodes: 159, power: 81.0 },
+    { code: 'ar', name: 'Argentina', nodes: 172, power: 87.7 },
+    { code: 'cl', name: 'Chile', nodes: 176, power: 89.7 },
+    { code: 'za', name: 'South Africa', nodes: 106, power: 54.0 },
+    { code: 'th', name: 'Thailand', nodes: 81, power: 41.3 },
+    { code: 'tr', name: 'Turkey', nodes: 119, power: 60.7 },
+    { code: 'cn', name: 'China', nodes: 85, power: 43.4 },
+    { code: 'in', name: 'India', nodes: 62, power: 31.6 },
+    // 31-50 (LOWER TIER)
+    { code: 'ng', name: 'Nigeria', nodes: 45, power: 22.9 },
+    { code: 'gh', name: 'Ghana', nodes: 67, power: 34.2 },
+    { code: 'ke', name: 'Kenya', nodes: 75, power: 38.3 },
+    { code: 'eg', name: 'Egypt', nodes: 54, power: 27.6 },
+    { code: 'pk', name: 'Pakistan', nodes: 35, power: 17.9 },
+    { code: 'bd', name: 'Bangladesh', nodes: 42, power: 21.4 },
+    { code: 'et', name: 'Ethiopia', nodes: 47, power: 24.0 },
+    { code: 'tz', name: 'Tanzania', nodes: 67, power: 34.2 },
+    { code: 'ug', name: 'Uganda', nodes: 67, power: 34.2 },
+    { code: 'rw', name: 'Rwanda', nodes: 68, power: 34.7 },
+    { code: 'sn', name: 'Senegal', nodes: 65, power: 33.2 },
+    { code: 'cm', name: 'Cameroon', nodes: 54, power: 27.6 },
+    { code: 'dz', name: 'Algeria', nodes: 55, power: 28.1 },
+    { code: 'ma', name: 'Morocco', nodes: 69, power: 35.2 },
+    { code: 'tn', name: 'Tunisia', nodes: 72, power: 36.7 },
+    { code: 'jo', name: 'Jordan', nodes: 55, power: 28.1 },
+    { code: 'lb', name: 'Lebanon', nodes: 49, power: 25.0 },
+    { code: 'lk', name: 'Sri Lanka', nodes: 44, power: 22.4 },
+    { code: 'np', name: 'Nepal', nodes: 40, power: 20.4 },
+    { code: 'af', name: 'Afghanistan', nodes: 28, power: 14.3 },
+  ];
+
+  React.useEffect(() => {
+    const timer = setInterval(() => {
+      setActiveCountryIdx((prev) => (prev + 1) % countries.length);
+    }, 4000);
+    return () => clearInterval(timer);
+  }, [countries.length]);
+
+  const activeCountry = countries[activeCountryIdx];
+
+  const handleInit = (preset?: any) => {
+    // Hackathon Scenario: Default to US -> Swiss
+    const startState = preset?.start || {
       timestamp: new Date(),
       location: 'Austin, TX, USA',
       profession: 'Senior DevOps Engineer',
@@ -22,32 +89,53 @@ export default function LandingPage() {
       dependencies: 0,
       assets: 52000,
       liabilities: 15000,
-      metadata: {
-        citizenship: 'USA',
-        riskTolerance: 'medium'
-      }
+      metadata: { citizenship: 'USA', riskTolerance: 'medium' }
     };
 
-    const goalState = {
+    const goalState = preset?.goal || {
       timestamp: new Date(new Date().setFullYear(new Date().getFullYear() + 5)),
       location: 'Zurich, Switzerland',
       profession: 'Cloud Architect',
-      income: 160000, // CHF equivalent approx
+      income: 160000,
       skills: ['German (B1)', 'European Banking Regulations'],
       qualifications: ['Masters (Optional)'],
       familyStatus: 'Single',
       dependencies: 0,
       assets: 100000,
       liabilities: 0,
-      metadata: {
-        targetVisa: 'B Permit / C Settlement',
-        motive: 'Stability & Crypto Industry'
-      }
+      metadata: { targetVisa: 'B Permit / C Settlement', motive: 'Stability & Crypto Industry' }
     };
 
     initialize('hackathon_user_01', startState, goalState);
     router.push('/dashboard');
   };
+
+  const presets = [
+    {
+      id: 'asset',
+      label: '[01. ASSET_MAP]',
+      start: { location: 'Lagos, Nigeria', profession: 'Backend Dev', income: 45000, metadata: { citizenship: 'Nigeria' } },
+      goal: { location: 'Lisbon, Portugal', profession: 'Digital Nomad', metadata: { targetVisa: 'D8 Visa' } }
+    },
+    {
+      id: 'passport',
+      label: '[02. PASSPORT_LOGIC]',
+      start: { location: 'London, UK', profession: 'Asset Manager', income: 250000, metadata: { citizenship: 'UK' } },
+      goal: { location: 'Dubai, UAE', profession: 'Fund Manager', metadata: { targetVisa: 'Golden Visa' } }
+    },
+    {
+      id: 'corridor',
+      label: '[03. CORRIDOR_SIM]',
+      start: { location: 'Toronto, Canada', profession: 'AI Researcher', income: 180000, metadata: { citizenship: 'Canada' } },
+      goal: { location: 'Singapore', profession: 'CTO', metadata: { targetVisa: 'ONE Pass' } }
+    },
+    {
+      id: 'terminal',
+      label: '[04. TERMINAL]',
+      start: { location: 'Mumbai, India', profession: 'Product Designer', income: 65000, metadata: { citizenship: 'India' } },
+      goal: { location: 'Vancouver, Canada', profession: 'Design Lead', metadata: { targetVisa: 'Express Entry' } }
+    }
+  ];
 
   return (
     <div className="min-h-screen flex flex-col relative">
@@ -75,10 +163,15 @@ export default function LandingPage() {
           <h2 className="text-xl font-black leading-tight tracking-tighter font-display uppercase tracking-[-0.05em]">CONVERGE</h2>
         </div>
         <nav className="hidden lg:flex items-center gap-10 font-mono text-[10px] tracking-widest">
-          <span className="text-white/60 hover:text-primary transition-colors cursor-pointer">[01. ASSET_MAP]</span>
-          <span className="text-white/60 hover:text-primary transition-colors cursor-pointer">[02. PASSPORT_LOGIC]</span>
-          <span className="text-white/60 hover:text-primary transition-colors cursor-pointer">[03. CORRIDOR_SIM]</span>
-          <span className="text-white/60 hover:text-primary transition-colors cursor-pointer">[04. TERMINAL]</span>
+          {presets.map((p) => (
+            <span
+              key={p.id}
+              onClick={() => handleInit(p)}
+              className="text-white/60 hover:text-primary transition-colors cursor-pointer"
+            >
+              {p.label}
+            </span>
+          ))}
         </nav>
         <div className="flex items-center gap-4">
           <span className="font-mono text-[10px] text-primary/70 hidden sm:inline uppercase">status: encrypted_link</span>
@@ -112,7 +205,7 @@ export default function LandingPage() {
             </div>
             <div className="flex flex-col sm:flex-row gap-6 items-center">
               <button
-                onClick={handleInit}
+                onClick={() => handleInit()}
                 className="w-full sm:w-auto min-w-[240px] bg-primary text-black h-14 px-8 font-mono text-sm font-black tracking-widest hover:bg-white transition-all shadow-[0_0_30px_rgba(0,209,255,0.3)]"
               >
                 <span className="cursor-blink">INIT_SIM_v1.0</span>
@@ -138,24 +231,41 @@ export default function LandingPage() {
 
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-0 border border-primary/10">
             {/* Metric 1 */}
-            <div className="p-8 border-r border-primary/10 flex flex-col gap-4 group hover:bg-primary/5 transition-colors">
-              <span className="font-mono text-[9px] text-primary/50 tracking-[0.2em]">ACCESS_NODES</span>
+            <div className="p-8 border-r border-primary/10 flex flex-col gap-4 group hover:bg-primary/5 transition-colors relative overflow-hidden">
+              <div className="flex justify-between items-start">
+                <span className="font-mono text-[9px] text-primary/50 tracking-[0.2em]">{activeCountry.code.toUpperCase()}_ACCESS_NODES</span>
+                <img
+                  src={`https://flagcdn.com/w40/${activeCountry.code}.png`}
+                  alt={activeCountry.name}
+                  className="w-6 h-auto opacity-80 group-hover:opacity-100 transition-opacity"
+                />
+              </div>
               <div className="flex items-end gap-2">
-                <span className="text-4xl font-black font-display tracking-tighter">192</span>
+                <span className="text-4xl font-black font-display tracking-tighter transition-all duration-500">
+                  {activeCountry.nodes}
+                </span>
                 <span className="font-mono text-[10px] text-primary mb-1">/COUNTRIES</span>
               </div>
               <div className="h-1 w-full bg-white/5 overflow-hidden">
-                <div className="h-full bg-primary w-[85%]"></div>
+                <div
+                  className="h-full bg-primary transition-all duration-1000 ease-out"
+                  style={{ width: `${(activeCountry.nodes / 195) * 100}%` }}
+                ></div>
               </div>
             </div>
             {/* Metric 2 */}
             <div className="p-8 border-r border-primary/10 flex flex-col gap-4 group hover:bg-primary/5 transition-colors">
               <span className="font-mono text-[9px] text-primary/50 tracking-[0.2em]">VISA_FREE_POWER</span>
               <div className="flex items-end gap-2">
-                <span className="text-4xl font-black font-display tracking-tighter">94.2%</span>
+                <span className="text-4xl font-black font-display tracking-tighter transition-all duration-500">
+                  {activeCountry.power}%
+                </span>
               </div>
               <div className="h-1 w-full bg-white/5 overflow-hidden">
-                <div className="h-full bg-primary w-[94%]"></div>
+                <div
+                  className="h-full bg-primary transition-all duration-1000 ease-out"
+                  style={{ width: `${activeCountry.power}%` }}
+                ></div>
               </div>
             </div>
             {/* Metric 3 */}
