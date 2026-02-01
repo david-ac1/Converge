@@ -16,9 +16,79 @@ interface PassportHolographProps {
     target: PassportData | null;
 }
 
+// Internal component for single passport display
+function SinglePassportCard({ passport }: { passport: PassportData }) {
+    const crestPath = "/api/media?path=C:/Users/david/.gemini/antigravity/brain/a6a0409d-af30-432f-bffb-5fb9414c0cfa/global_mobility_crest_1769965558772.png";
+
+    return (
+        <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.5 }}
+            className="relative w-[160px] h-[220px] rounded-[3px] shadow-[0_25px_50px_-12px_rgba(0,0,0,0.7)] overflow-hidden flex flex-col group cursor-pointer"
+            style={{
+                backgroundColor: passport.color || '#1a1a2e',
+                backgroundImage: `linear-gradient(145deg,rgba(255,255,255,0.05) 0%,transparent 50%,rgba(0,0,0,0.2) 100%),url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="10" height="10" patternUnits="userSpaceOnUse"><circle cx="5" cy="5" r="0.5" fill="rgba(210,180,140,0.04)"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>')`
+            }}
+        >
+            {/* Gold Border Inset */}
+            <div className="absolute inset-[4px] border border-[#D4AF37]/30 pointer-events-none rounded-[2px]" />
+            <div className="absolute inset-[8px] border border-[#D4AF37]/20 pointer-events-none rounded-[1px]" />
+
+            {/* Content */}
+            <div className="flex flex-col items-center justify-between h-full py-4 px-3 text-center relative z-10">
+                {/* Country Name */}
+                <div className="text-[10px] font-display font-black text-[#D4AF37] tracking-[0.3em] uppercase opacity-90 drop-shadow-[0_1px_1px_rgba(0,0,0,0.6)]">
+                    {passport.country}
+                </div>
+
+                {/* Crest */}
+                <div className="relative size-24 my-2 flex items-center justify-center">
+                    <Image
+                        src={crestPath}
+                        alt="Global Mobility Crest"
+                        width={96}
+                        height={96}
+                        className="w-full h-full object-contain filter brightness-[1.3] contrast-[1.1] drop-shadow-[0_4px_4px_rgba(0,0,0,0.6)]"
+                        style={{ filter: 'sepia(0.8) saturate(10) hue-rotate(-15deg) brightness(1.2)' }}
+                    />
+                </div>
+
+                {/* Footer */}
+                <div className="w-full text-center space-y-3">
+                    <div className="text-[11px] font-display font-black text-[#D4AF37] uppercase tracking-[0.4em] drop-shadow-[0_1px_1px_rgba(0,0,0,0.6)] opacity-95">
+                        PASSPORT
+                    </div>
+                    <div className="flex justify-center opacity-70 scale-90">
+                        <div className="w-7 h-4 border-[1.5px] border-[#D4AF37] rounded-sm flex items-center justify-center relative">
+                            <div className="w-2.5 h-2.5 bg-[#D4AF37] rounded-full shadow-inner" />
+                            <div className="absolute inset-x-0 h-[1.5px] bg-[#D4AF37] top-1/2 -translate-y-1/2" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {/* Hover Overlay */}
+            <div className="absolute inset-x-0 bottom-0 bg-black/70 backdrop-blur-lg p-2 translate-y-full group-hover:translate-y-0 transition-transform duration-500 border-t border-[#D4AF37]/30 z-30">
+                <div className="flex justify-between items-center font-mono text-[9px] px-1">
+                    <div className="flex flex-col">
+                        <span className="text-primary/60 text-[7px] uppercase tracking-tighter">Henley_Rank</span>
+                        <span className="text-primary font-bold">#{passport.rank}</span>
+                    </div>
+                    <div className="flex flex-col text-right">
+                        <span className="text-[#D4AF37]/60 text-[7px] uppercase tracking-tighter">Mobility_Score</span>
+                        <span className="text-[#D4AF37] font-bold">{passport.visaFree} DEST.</span>
+                    </div>
+                </div>
+            </div>
+        </motion.div>
+    );
+}
+
 export function PassportHolograph({ origin, target }: PassportHolographProps) {
     const [isFlipped, setIsFlipped] = useState(false);
 
+    // Only auto-flip if both origin and target are provided
     useEffect(() => {
         if (!origin || !target) return;
 
@@ -28,6 +98,15 @@ export function PassportHolograph({ origin, target }: PassportHolographProps) {
 
         return () => clearInterval(interval);
     }, [origin, target]);
+
+    // Single passport mode (no target)
+    if (origin && !target) {
+        return (
+            <div className="relative w-full h-[230px] perspective-[1000px] flex items-center justify-center">
+                <SinglePassportCard passport={origin} />
+            </div>
+        );
+    }
 
     if (!origin || !target) return null;
 

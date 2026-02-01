@@ -4,6 +4,7 @@ import React from 'react';
 import { useRouter } from 'next/navigation';
 import { useUserMigrationState } from '@/hooks/useUserMigrationState';
 import PassportSchematic from '@/components/PassportSchematic';
+import { getFlagUrl } from '@/lib/flagUtils';
 
 export default function LandingPage() {
   const router = useRouter();
@@ -137,6 +138,15 @@ export default function LandingPage() {
     }
   ];
 
+  // Handle nav item click - some go to different pages, others init presets
+  const handleNavClick = (preset: typeof presets[0]) => {
+    if (preset.id === 'passport') {
+      router.push('/passport-logic');
+    } else {
+      handleInit(preset);
+    }
+  };
+
   return (
     <div className="min-h-screen flex flex-col relative">
       {/* Background Map SVG Overlay (Low opacity) */}
@@ -166,7 +176,7 @@ export default function LandingPage() {
           {presets.map((p) => (
             <span
               key={p.id}
-              onClick={() => handleInit(p)}
+              onClick={() => handleNavClick(p)}
               className="text-white/60 hover:text-primary transition-colors cursor-pointer"
             >
               {p.label}
@@ -235,7 +245,7 @@ export default function LandingPage() {
               <div className="flex justify-between items-start">
                 <span className="font-mono text-[9px] text-primary/50 tracking-[0.2em]">{activeCountry.code.toUpperCase()}_ACCESS_NODES</span>
                 <img
-                  src={`https://flagcdn.com/w40/${activeCountry.code}.png`}
+                  src={getFlagUrl(activeCountry.code, 'medium')}
                   alt={activeCountry.name}
                   className="w-6 h-auto opacity-80 group-hover:opacity-100 transition-opacity"
                 />
