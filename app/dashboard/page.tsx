@@ -4,7 +4,6 @@ import React, { useState, useEffect, useCallback } from 'react';
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import { useUserMigrationState } from '@/hooks/useUserMigrationState';
-import { useTavus } from '@/components/providers/TavusProvider';
 
 // Dynamic imports for dashboard components
 const DashboardVolatilityRadar = dynamic(() => import('@/components/VolatilityRadar'), {
@@ -33,7 +32,6 @@ interface TrendsReport {
 
 export default function DashboardPage() {
     const { state, generatePlan, updateGeopoliticalProfile, initialize, updateThoughtSignature } = useUserMigrationState();
-    const { updateContext } = useTavus();
     const [currentYear, setCurrentYear] = useState(0);
     const [trendsReport, setTrendsReport] = useState<TrendsReport | null>(null);
     const [, setTrendsLoading] = useState(false);
@@ -107,16 +105,8 @@ export default function DashboardPage() {
         }
     }, [state?.currentState, state?.goalState, state?.activePlan, state?.sessionMetadata?.thoughtSignature, generatePlan, updateGeopoliticalProfile]);
 
-    // Update Tavus context when year changes or data updates
-    useEffect(() => {
-        updateContext({
-            focusedYear: currentYear,
-            topic: `Discussion about year ${currentYear} of the plan`,
-            thoughtSignature: state?.sessionMetadata?.thoughtSignature,
-            geopoliticalProfile: state?.geopoliticalProfile,
-            trendsReport: trendsReport
-        });
-    }, [currentYear, updateContext, state?.sessionMetadata?.thoughtSignature, state?.geopoliticalProfile, trendsReport]);
+    // Update Tavus context removed
+
 
     const handleScrubberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const year = parseFloat(e.target.value);
