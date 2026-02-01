@@ -31,29 +31,67 @@ interface TrendsReport {
 }
 
 export default function DashboardPage() {
-    const { state, generatePlan, updateGeopoliticalProfile, initialize, updateThoughtSignature } = useUserMigrationState();
+    const { state, generatePlan, updateGeopoliticalProfile, initialize, updateThoughtSignature, initializeSimulation } = useUserMigrationState();
     const [currentYear, setCurrentYear] = useState(0);
     const [trendsReport, setTrendsReport] = useState<TrendsReport | null>(null);
     const [, setTrendsLoading] = useState(false);
 
     // Handle onboarding completion - generate plan from interview data
     const handleOnboardingComplete = useCallback(async (data: any) => {
-        console.log('Onboarding complete:', data);
+        console.log('Onboarding complete - mapping data:', data);
 
-        if (data.currentState && data.goalState) {
-            // Initialize state with conversational data
-            const userId = `user_${Date.now()}`;
-            initialize(userId, data.currentState, data.goalState);
+        // Map flat data (from ChatAgent) to structured snapshots (from simulation engine)
+        let currentState = data.currentState;
+        let goalState = data.goalState;
 
-            // Update thought signature with interview summary
-            updateThoughtSignature(`User ${data.name}: ${data.nationality} → ${data.destination} (${data.migrationGoal})`);
-
-            // Generate plan from the collected data
-            setTimeout(() => {
-                generatePlan(10).catch(err => console.error('Plan generation failed:', err));
-            }, 500);
+        // If data is flat (from standard ChatAgent extraction)
+        if (!currentState && (data.nationality || data.currentLocation)) {
+            currentState = {
+                timestamp: new Date(),
+                location: data.currentLocation || data.nationality || 'Nigeria',
+                profession: data.profession || 'Professional',
+                income: data.incomeRange ? parseInt(data.incomeRange.replace(/[^0-9]/g, '')) || 50000 : 50000,
+                skills: [],
+                qualifications: [],
+                familyStatus: 'Single',
+                dependencies: 0,
+                assets: 5000,
+                liabilities: 0,
+                metadata: {
+                    name: data.name,
+                    citizenship: data.nationality,
+                    age: data.age
+                }
+            };
         }
-    }, [initialize, generatePlan, updateThoughtSignature]);
+
+        // If no goalState yet but we have personal data, create a placeholder goalState
+        if (!goalState && currentState) {
+            goalState = {
+                ...currentState,
+                timestamp: new Date(),
+                location: data.destination || 'Strategic_Nexus',
+                metadata: {
+                    ...currentState.metadata,
+                    goal: data.migrationGoal || 'Global_Exploration',
+                    isPlaceholderGoal: !data.destination
+                }
+            };
+        }
+
+        if (currentState && goalState) {
+            const userId = `user_${Date.now()}`;
+            const targetDisplay = data.destination || 'Strategic_Nexus';
+            const signature = `Trajectory Optimized: ${data.name || 'User'} [${data.nationality || 'Hidden'}] → ${targetDisplay}`;
+
+            // Execute atomic initialization and simulation start
+            initializeSimulation(userId, currentState, goalState, signature).catch(err => {
+                console.error('Simulation initialization failed:', err);
+                // Fallback to basic init if atomic fails
+                initialize(userId, currentState, goalState);
+            });
+        }
+    }, [initialize, initializeSimulation]);
 
     // Auto-generate plan and fetch initial data
     // Only generate plan and fetch data AFTER onboarding is complete (state has been initialized)

@@ -27,6 +27,7 @@ export function useUserMigrationState() {
         setState(newState);
     }, []);
 
+
     // Update migration plan
     const updatePlan = useCallback((plan: MigrationPlan) => {
         stateManager.updatePlan(plan);
@@ -122,6 +123,34 @@ export function useUserMigrationState() {
         setState(stateManager.getState());
     }, []);
 
+    // Atomic initialization and simulation start
+    const initializeSimulation = useCallback(async (
+        userId: string,
+        currentState: MigrationSnapshot,
+        goalState: MigrationSnapshot,
+        initialSignature: string
+    ) => {
+        setIsLoading(true);
+        try {
+            // 1. Initialize core state
+            stateManager.initializeState(userId, currentState, goalState);
+
+            // 2. Set signature
+            stateManager.updateThoughtSignature(initialSignature);
+
+            // 3. Update React state
+            const stateWithSignature = stateManager.getState();
+            setState(stateWithSignature);
+
+            // 4. Trigger plan generation immediately
+            const planResult = await generatePlan(10);
+
+            return { state: stateManager.getState(), plan: planResult };
+        } finally {
+            setIsLoading(false);
+        }
+    }, [generatePlan]);
+
     return {
         state,
         isLoading,
@@ -136,5 +165,6 @@ export function useUserMigrationState() {
         clearState,
         exportState,
         importState,
+        initializeSimulation,
     };
 }

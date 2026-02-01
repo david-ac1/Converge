@@ -64,14 +64,25 @@ export async function POST(request: NextRequest) {
 
         // Data extraction logic if conversation is long enough
         let onboardingData = null;
-        if (messages.length >= 8) {
-            console.log('[API] Conversation length met. Attempting data extraction...');
+        if (messages.length >= 6) {
+            console.log('[API] Attempting data extraction and completion check...');
             try {
-                const extractionPrompt = `Based on this conversation, extract:
-- name, nationality, currentLocation, migrationGoal, age, incomeRange, destination
-Return ONLY a JSON object. No markdown.`;
+                const extractionPrompt = `Analyze the conversation and extract user migration profile.
+REQUIRED FIELDS:
+- name
+- nationality
+- currentLocation
+- migrationGoal (e.g., Citizenship, Work, Study)
+- age (integer)
+- incomeRange
+- destination (Target country or city)
 
-                // Use a separate one-off call for extraction to avoid messing with chat state
+Also, determine "isComplete": true if ALL fields above have been answered clearly by the user, otherwise false.
+
+Return ONLY a JSON object. No markdown. Example:
+{"name": "...", ..., "isComplete": true}`;
+
+                // Use a separate one-off call for extraction
                 const extractResult = await model.generateContent([
                     ...history.map((h: any) => h.parts[0].text),
                     prompt,
@@ -83,7 +94,7 @@ Return ONLY a JSON object. No markdown.`;
                 const jsonMatch = extractText.match(/\{[\s\S]*\}/);
                 if (jsonMatch) {
                     onboardingData = JSON.parse(jsonMatch[0]);
-                    console.log('[API] Successfully extracted data:', onboardingData);
+                    console.log('[API] Extraction Result:', onboardingData);
                 }
             } catch (e) {
                 console.warn('[API] Extraction failed:', e);

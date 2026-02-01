@@ -16,7 +16,7 @@ export class MigrationEngine {
             this.genAI = new GoogleGenerativeAI(apiKey);
             // Configure for Gemini 3 Pro capabilities (Reasoning/Thinking)
             this.model = this.genAI.getGenerativeModel({
-                model: 'gemini-3-flash-preview',
+                model: 'gemini-3-pro-preview',
                 generationConfig: {
                     temperature: 1,
                     topK: 64,
@@ -59,6 +59,10 @@ export class MigrationEngine {
             // --- STEP 3: PATH PLANNER AGENT (CORE) ---
             // Generates the optimal baseline trajectory
             const baselinePlan = await this._agentPathPlanner(normalizedContext, timeframe);
+
+            // INJECT: Ensure states are passed to downstream agents
+            baselinePlan.startState = currentState;
+            baselinePlan.goalState = goalState;
 
             // --- STEP 4: MACRO MOBILITY FUTURES AGENT ---
             // Ingests global trends (Passport Logic is called externally usually, but we simulate ingestion here)

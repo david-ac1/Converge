@@ -34,9 +34,15 @@ export class TrendAnalyzer {
         const key = apiKey || process.env.GEMINI_API_KEY;
         if (key) {
             this.genAI = new GoogleGenerativeAI(key);
-            // Use Gemini 2.0 Flash with search grounding capability
+            // Use Gemini 3 Pro with search grounding capability
             this.model = this.genAI.getGenerativeModel({
-                model: 'gemini-3-flash-preview',
+                model: 'gemini-3-pro-preview',
+                tools: [
+                    {
+                        // @ts-ignore - Updated Google Search tool key
+                        googleSearch: {},
+                    },
+                ] as any,
                 generationConfig: {
                     temperature: 0.7,
                     maxOutputTokens: 4096,

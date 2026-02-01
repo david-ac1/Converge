@@ -80,10 +80,14 @@ export default function VolatilityRadar({ riskProfile }: VolatilityRadarProps) {
     // Determine warning state (Tactile Blueprint Shift)
     const isCrisis = riskProfile ? riskProfile.reputationScore < 50 : false;
 
-    // Default or Prop values
-    const score = riskProfile ? riskProfile.reputationScore : 85;
-    const stability = isCrisis ? 35 : 85; // Simulated drop in stability if crisis
-    const trend = isCrisis ? 12 : 94; // Passport power tanks in crisis
+    // Default or Prop values - use 0 if no profile to avoid deceptive mock data
+    const score = riskProfile ? riskProfile.reputationScore : 0;
+    const stability = riskProfile ? (isCrisis ? 35 : 85) : 0;
+    const trend = riskProfile?.visaFreeCount
+        ? Math.min(100, Math.round((riskProfile.visaFreeCount / 190) * 100))
+        : 0;
+
+    const statusLine = riskProfile ? (isCrisis ? 'UNSTABLE' : 'Active') : 'AWAITING_DATA';
 
     return (
         <div className={`blueprint-border p-6 ${isCrisis ? 'bg-red-950/10 border-red-500/30' : 'bg-background/50'} backdrop-blur-md h-full flex flex-col gap-6 transition-colors duration-700`}>
@@ -108,7 +112,7 @@ export default function VolatilityRadar({ riskProfile }: VolatilityRadarProps) {
             <div className="mt-auto space-y-2">
                 <div className={`flex justify-between font-mono text-[9px] ${isCrisis ? 'text-red-500/60' : 'text-primary/40'} uppercase`}>
                     <span>Vector_Analysis</span>
-                    <span>{isCrisis ? 'UNSTABLE' : 'Active'}</span>
+                    <span>{statusLine}</span>
                 </div>
                 <div className={`h-24 w-full border ${isCrisis ? 'border-red-500/20 bg-red-950/20' : 'border-primary/10 bg-black/40'} relative overflow-hidden transition-colors`}>
                     {/* Fake waveform */}
