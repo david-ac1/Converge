@@ -4,6 +4,9 @@ import React, { useState, useEffect, useCallback } from 'react';
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import { useUserMigrationState } from '@/hooks/useUserMigrationState';
+import { PassportHolograph } from '@/components/PassportHolograph';
+import { MilestoneModal } from '@/components/MilestoneModal';
+import { MigrationStep } from '@/types/migration';
 
 // Dynamic imports for dashboard components
 const DashboardVolatilityRadar = dynamic(() => import('@/components/VolatilityRadar'), {
@@ -35,6 +38,9 @@ export default function DashboardPage() {
     const [currentYear, setCurrentYear] = useState(0);
     const [trendsReport, setTrendsReport] = useState<TrendsReport | null>(null);
     const [, setTrendsLoading] = useState(false);
+    const [selectedStep, setSelectedStep] = useState<MigrationStep | null>(null);
+    const [originPassport, setOriginPassport] = useState<any>(null);
+    const [targetPassport, setTargetPassport] = useState<any>(null);
 
     // Handle onboarding completion - generate plan from interview data
     const handleOnboardingComplete = useCallback(async (data: any) => {
@@ -140,6 +146,28 @@ export default function DashboardPage() {
                     .catch(err => console.error('Trends fetch failed:', err))
                     .finally(() => setTrendsLoading(false));
             }
+
+            // Fetch Henley Data for Holograph
+            if (state.currentState.location) {
+                fetch('/api/passport/analyze', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ country: state.currentState.location, type: 'henley' })
+                })
+                    .then(res => res.json())
+                    .then(data => setOriginPassport(data))
+                    .catch(err => console.error('Origin Henley fetch failed:', err));
+            }
+            if (state.goalState.location) {
+                fetch('/api/passport/analyze', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ country: state.goalState.location, type: 'henley' })
+                })
+                    .then(res => res.json())
+                    .then(data => setTargetPassport(data))
+                    .catch(err => console.error('Target Henley fetch failed:', err));
+            }
         }
     }, [state?.currentState, state?.goalState, state?.activePlan, state?.sessionMetadata?.thoughtSignature, generatePlan, updateGeopoliticalProfile]);
 
@@ -160,6 +188,14 @@ export default function DashboardPage() {
                     <div className="h-4 w-px bg-primary/20"></div>
                     <div className="font-mono text-[10px] text-primary/60 tracking-widest uppercase">/ SIMULATION_DASHBOARD</div>
                 </div>
+                {state?.activePlan?.recommendationScore !== undefined && (
+                    <div className="flex items-center gap-2 px-3 py-1 bg-primary/10 border border-primary/30 rounded-full">
+                        <span className="font-mono text-[10px] text-primary/60 uppercase">Net_Recommendation:</span>
+                        <span className={`font-mono text-xs font-bold ${state.activePlan.recommendationScore > 70 ? 'text-green-400' : 'text-primary'}`}>
+                            {state.activePlan.recommendationScore}%
+                        </span>
+                    </div>
+                )}
                 <div className="flex items-center gap-6 font-mono text-[10px] text-primary/40 uppercase">
                     <span>RAM: 64%</span>
                     <span>CPU: 12%</span>
@@ -213,6 +249,7 @@ export default function DashboardPage() {
                         <ConvergenceMap
                             migrationPlan={state?.activePlan || null}
                             currentYear={currentYear}
+                            onNodeClick={(step) => setSelectedStep(step)}
                         />
                     </div>
 
@@ -244,11 +281,28 @@ export default function DashboardPage() {
                 </div>
 
                 {/* Right Column: Expert Link (3 Cols) */}
-                <div className="col-span-12 lg:col-span-3 h-full">
-                    <DashboardExpertHub onOnboardingComplete={handleOnboardingComplete} />
+                <div className="col-span-12 lg:col-span-3 h-full flex flex-col gap-6">
+                    {/* Passport Holograph */}
+                    {state?.currentState && (
+                        <div className="blueprint-border p-4 bg-background/40">
+                            <div className="font-mono text-[9px] text-primary/40 uppercase tracking-widest mb-4">Identity_Matrix</div>
+                            <PassportHolograph origin={originPassport} target={targetPassport} />
+                        </div>
+                    )}
+                    <div className="flex-1 overflow-hidden">
+                        <DashboardExpertHub onOnboardingComplete={handleOnboardingComplete} />
+                    </div>
                 </div>
 
             </main>
+
+            {/* Modals & Overlays */}
+            {selectedStep && (
+                <MilestoneModal
+                    step={selectedStep}
+                    onClose={() => setSelectedStep(null)}
+                />
+            )}
         </div>
     );
 }

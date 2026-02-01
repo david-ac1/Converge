@@ -22,7 +22,7 @@ export class MigrationEngine {
                     topK: 64,
                     topP: 0.95,
                     maxOutputTokens: 65536,
-                    responseMimeType: "text/plain",
+                    responseMimeType: "application/json",
                 }
             });
         }
@@ -78,17 +78,22 @@ export class MigrationEngine {
             // Red Teams the plan to find breakage points
             const failureAnalysis = await this._agentFailureSimulator(adjustedPlan);
 
-            // --- STEP 7: RE-EVALUATION LOOP ---
-            // If high failure probability, loop back to Planner (Simplification: We attach warnings)
+            // --- STEP 7: RECOMMENDATION ENGINE ---
+            // Analyzes net policy sentiment and provides a recommendation score
+            const recommendation = await this._agentRecommendationScore(adjustedPlan);
+
             const finalPlan = {
                 ...adjustedPlan,
+                recommendationScore: recommendation.score,
+                recommendationSummary: recommendation.summary,
                 risks: [...(adjustedPlan.risks || []), ...failureAnalysis.risks],
                 successProbability: failureAnalysis.adjustedProbability,
                 _thoughtSignature: [
                     normalizedContext.thoughtSignature,
                     baselinePlan._thoughtSignature,
                     macroTrends.thoughtSignature,
-                    failureAnalysis.thoughtSignature
+                    failureAnalysis.thoughtSignature,
+                    recommendation.thoughtSignature
                 ].join('\n\n---\n\n')
             };
 
@@ -145,13 +150,36 @@ export class MigrationEngine {
     }
 
     async _agentPathPlanner(context, timeframe) {
-        // This reuses the logic of the original _buildPlanningPrompt but refined
-        const prompt = this._buildPlanningPrompt(context.currentState, context.goalState, timeframe);
+        const prompt = `${this._buildPlanningPrompt(context.currentState, context.goalState, timeframe)}
+        
+        CRITICAL: For each step, include "multimodalProof" with:
+        - "newsLinks": 2 real-world news headline strings that would justify this step.
+        - "audioScript": A 1-2 sentence script for an AI avatar explaining this milestone.
+        - "sentiment": "favorable" | "blocking" | "neutral"
+        `;
         const result = await this.model.generateContent(prompt);
         const text = result.response.text();
         const plan = this._parsePlanResponse(text);
         const thought = this._extractThought(result.response);
         return { ...plan, _thoughtSignature: `[Path Planner]: ${thought}` };
+    }
+
+    async _agentRecommendationScore(plan) {
+        const prompt = `
+            ROLE: Strategic Recommendation Agent
+            TASK: Analyze the following plan for policy net-value.
+            PLAN: ${JSON.stringify(plan)}
+            
+            Evaluate current global incentives, tax breaks, and D8/D3 visa processing trends.
+            Calculate a score from 0-100 where 100 is highly recommended.
+            
+            OUTPUT: JSON { "score": number, "summary": string }
+        `;
+        const result = await this.model.generateContent(prompt);
+        const text = result.response.text();
+        const json = this._parsePlanResponse(text);
+        const thought = this._extractThought(result.response);
+        return { ...json, thoughtSignature: `[Recommendation Eng]: Analyzed policy net-value.` };
     }
 
     async _agentMacroMobilityFutures(plan) {

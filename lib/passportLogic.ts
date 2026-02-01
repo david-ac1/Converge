@@ -83,6 +83,41 @@ export class PassportLogicService {
     }
 
     /**
+     * Fetch real-time Henley Passport Index ranking and mobility data
+     */
+    async fetchHenleyData(country: string): Promise<{ rank: number; visaFree: number; color: string }> {
+        if (!this.model) {
+            return { rank: 1, visaFree: 190, color: '#00D1FF' }; // Default
+        }
+
+        try {
+            const prompt = `
+                Fetch the latest 2026 Henley Passport Index ranking and the total number of visa-free destinations for: ${country}.
+                Also, suggest a hex color code that represents this nation's passport (e.g., deep red, navy blue, forest green).
+                
+                OUTPUT: JSON { "rank": number, "visaFree": number, "color": string }
+            `;
+
+            const result = await this.model.generateContent({
+                contents: [{ role: 'user', parts: [{ text: prompt }] }],
+                tools: [{ googleSearch: {} }] as any
+            });
+
+            const text = result.response.text();
+            const json = this._extractJSON(text);
+
+            return {
+                rank: json.rank || 0,
+                visaFree: json.visaFree || 0,
+                color: json.color || '#333333'
+            };
+        } catch (error) {
+            console.error(`Failed to fetch Henley data for ${country}:`, error);
+            return { rank: 0, visaFree: 0, color: '#333333' };
+        }
+    }
+
+    /**
      * Apply trend signals to adjust the reputation score
      */
     applyTrendSignals(

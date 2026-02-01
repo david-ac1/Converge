@@ -42,6 +42,8 @@ export interface MigrationPlan {
   steps: MigrationStep[];
   totalEstimatedCost: number;
   successProbability: number;
+  recommendationScore?: number;
+  recommendationSummary?: string;
   criticalPath: string[]; // step IDs in critical path
   createdAt: Date;
   updatedAt: Date;

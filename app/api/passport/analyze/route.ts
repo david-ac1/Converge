@@ -5,7 +5,12 @@ import { passportLogic } from '@/lib/passportLogic';
 export async function POST(request: NextRequest) {
     try {
         const body = await request.json();
-        const { passportId, context } = body;
+        const { passportId, context, type, country } = body;
+
+        if (type === 'henley') {
+            const henleyData = await passportLogic.fetchHenleyData(country || passportId);
+            return NextResponse.json(henleyData);
+        }
 
         if (!passportId) {
             return NextResponse.json({ error: 'Passport ID required' }, { status: 400 });
