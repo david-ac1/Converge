@@ -24,9 +24,9 @@ export class PassportLogicService {
     constructor(apiKey?: string) {
         if (apiKey) {
             this.genAI = new GoogleGenerativeAI(apiKey);
-            // Using gemini-2.0-flash-exp for stability
+            // Using gemini-3-flash-preview
             this.model = this.genAI.getGenerativeModel({
-                model: 'gemini-2.0-flash-exp',
+                model: 'gemini-3-flash-preview',
                 generationConfig: {
                     temperature: 0.7,
                 }

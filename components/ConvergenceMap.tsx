@@ -100,7 +100,7 @@ export default function ConvergenceMap({
                         <line x1="0" y1="50" x2="100" y2="50" stroke="#00D1FF" strokeWidth="0.5" />
                     </svg>
                 </div>
-                <div className="mt-4 font-mono text-[10px] text-primary/40 uppercase tracking-widest">Awaiting_Plan_Generation</div>
+                <div className="mt-4 font-mono text-[10px] text-primary/40 uppercase tracking-widest">Talk_To_ARIA_To_Begin</div>
             </div>
         );
     }

@@ -36,7 +36,7 @@ export class TrendAnalyzer {
             this.genAI = new GoogleGenerativeAI(key);
             // Use Gemini 2.0 Flash with search grounding capability
             this.model = this.genAI.getGenerativeModel({
-                model: 'gemini-2.0-flash-exp',
+                model: 'gemini-3-flash-preview',
                 generationConfig: {
                     temperature: 0.7,
                     maxOutputTokens: 4096,

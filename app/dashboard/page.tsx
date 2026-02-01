@@ -57,13 +57,15 @@ export default function DashboardPage() {
     }, [initialize, generatePlan, updateThoughtSignature]);
 
     // Auto-generate plan and fetch initial data
+    // Only generate plan and fetch data AFTER onboarding is complete (state has been initialized)
+    // This triggers when handleOnboardingComplete sets the state from ARIA interview
     useEffect(() => {
-        if (state?.currentState && state?.goalState && !state.activePlan) {
-            console.log('Auto-triggering migration plan generation...');
-            generatePlan(10).catch(err => console.error('Auto-plan failed:', err));
+        if (state?.currentState && state?.goalState && !state.activePlan && state?.sessionMetadata?.thoughtSignature) {
+            console.log('Onboarding complete - generating migration plan...');
+            generatePlan(10).catch(err => console.error('Plan generation failed:', err));
 
             // Trigger Agent Alpha (Passport Analysis)
-            const passportId = state.currentState.metadata?.citizenship || 'USA';
+            const passportId = state.currentState.metadata?.citizenship || state.currentState.location || 'USA';
 
             fetch('/api/passport/analyze', {
                 method: 'POST',
@@ -88,7 +90,7 @@ export default function DashboardPage() {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        origin: state.currentState.location || 'USA',
+                        origin: state.currentState.location || 'Unknown',
                         destination: state.goalState.location,
                         includeSearchGrounding: true
                     })
@@ -102,7 +104,7 @@ export default function DashboardPage() {
                     .finally(() => setTrendsLoading(false));
             }
         }
-    }, [state?.currentState, state?.goalState, state?.activePlan, generatePlan, updateGeopoliticalProfile]);
+    }, [state?.currentState, state?.goalState, state?.activePlan, state?.sessionMetadata?.thoughtSignature, generatePlan, updateGeopoliticalProfile]);
 
     // Update Tavus context when year changes or data updates
     useEffect(() => {
@@ -150,15 +152,22 @@ export default function DashboardPage() {
                     <div className="blueprint-border p-6 bg-background/50 flex-1 flex flex-col gap-4">
                         <div className="font-mono text-[10px] text-primary/40 uppercase tracking-widest border-b border-primary/10 pb-2">Log_Output</div>
                         <div className="flex-1 font-mono text-[9px] text-primary/60 space-y-2 overflow-hidden">
-                            <div className="flex gap-2"><span className="text-primary/30">[14:02:22]</span> SYS_INIT_COMPLETE</div>
-                            <div className="flex gap-2"><span className="text-primary/30">[14:02:23]</span> PASSPORT_DATA_LOADED</div>
-                            {state?.activePlan ? (
+                            <div className="flex gap-2"><span className="text-primary/30">[SYS]</span> CONVERGE_INIT_COMPLETE</div>
+                            {state?.sessionMetadata?.thoughtSignature ? (
                                 <>
-                                    <div className="flex gap-2"><span className="text-primary/30">[14:02:24]</span> PLAN_GENERATED</div>
-                                    <div className="flex gap-2 text-white"><span className="text-primary/30">[14:02:25]</span> {state.sessionMetadata.thoughtSignature ? "THOUGHT_SIG_CAPTURED" : "REASONING_ACTIVE"}</div>
+                                    <div className="flex gap-2"><span className="text-primary/30">[ARIA]</span> ONBOARDING_COMPLETE</div>
+                                    <div className="flex gap-2"><span className="text-primary/30">[DATA]</span> USER_PROFILE_CAPTURED</div>
+                                    {state?.activePlan ? (
+                                        <>
+                                            <div className="flex gap-2 text-green-500"><span className="text-primary/30">[PLAN]</span> TRAJECTORY_GENERATED</div>
+                                            <div className="flex gap-2 text-white"><span className="text-primary/30">[AI]</span> THOUGHT_SIG_ACTIVE</div>
+                                        </>
+                                    ) : (
+                                        <div className="flex gap-2 animate-pulse text-yellow-500"><span className="text-primary/30">[PLAN]</span> GENERATING...</div>
+                                    )}
                                 </>
                             ) : (
-                                <div className="flex gap-2 animate-pulse"><span className="text-primary/30">[14:02:24]</span> AWAITING_PLAN...</div>
+                                <div className="flex gap-2 animate-pulse text-primary"><span className="text-primary/30">[ARIA]</span> AWAITING_ONBOARDING...</div>
                             )}
                         </div>
                     </div>

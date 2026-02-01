@@ -16,7 +16,7 @@ export class MigrationEngine {
             this.genAI = new GoogleGenerativeAI(apiKey);
             // Configure for Gemini 3 Pro capabilities (Reasoning/Thinking)
             this.model = this.genAI.getGenerativeModel({
-                model: 'gemini-2.0-flash-thinking-exp',
+                model: 'gemini-3-flash-preview',
                 generationConfig: {
                     temperature: 1,
                     topK: 64,

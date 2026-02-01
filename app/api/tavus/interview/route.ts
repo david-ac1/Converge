@@ -23,10 +23,17 @@ export async function POST(request: NextRequest) {
             });
         }
 
+
         // Build the conversation request per Tavus v2 API spec
+        // Get the base URL for webhook callback
+        const baseUrl = process.env.NEXT_PUBLIC_APP_URL || process.env.VERCEL_URL
+            ? `https://${process.env.VERCEL_URL}`
+            : 'http://localhost:3000';
+
         const conversationPayload: any = {
             replica_id: replicaId,
             persona_id: personaId,
+            callback_url: `${baseUrl}/api/tavus/webhook`,
         };
 
         // ARIA Onboarding Persona - Default conversational context for intake
