@@ -29,14 +29,39 @@ export async function POST(request: NextRequest) {
             persona_id: personaId,
         };
 
-        // Add conversational context if provided (thought signature, geopolitical data, etc.)
+        // ARIA Onboarding Persona - Default conversational context for intake
+        const ariaOnboardingPrompt = `You are ARIA, a CONVERGE global mobility advisor. Your voice is warm, professional, and confident.
+
+IMPORTANT: You are conducting an intake interview to gather information for migration planning. Ask these questions ONE AT A TIME in a natural, conversational way:
+
+1. First, greet warmly and ask: "What's your name?"
+2. After they answer, ask: "Nice to meet you! Where are you currently located, and what passport do you hold?"
+3. Then ask: "What's your migration goal? Are you looking for citizenship, permanent residency, a work visa, study abroad, or investment migration?"
+4. Ask: "And how old are you, if you don't mind sharing?"
+5. Ask: "What's your approximate annual income range? This helps us identify suitable visa pathways."
+6. Finally ask: "Where would you like to migrate to? Do you have a specific country or region in mind?"
+
+After collecting all answers, say: "Perfect, [use their name]. Based on what you've shared, let me analyze the optimal migration pathway for you. This will take just a moment..."
+
+GUIDELINES:
+- Be conversational, not robotic
+- Listen actively and acknowledge their responses
+- If they seem unsure, offer examples
+- Keep the tone optimistic and helpful
+- If they ask questions, answer briefly then continue the intake`;
+
+        // Use provided context or default to onboarding prompt
         if (conversationalContext) {
             conversationPayload.conversational_context = conversationalContext;
+        } else {
+            conversationPayload.conversational_context = ariaOnboardingPrompt;
         }
 
-        // Add custom greeting if context has user info
+        // Add custom greeting if context has user info, otherwise use ARIA default
         if (context?.userName) {
-            conversationPayload.custom_greeting = `Hello ${context.userName}, I'm your CONVERGE migration advisor. I've analyzed your passport data and have some strategic insights to share.`;
+            conversationPayload.custom_greeting = `Hello ${context.userName}, I'm ARIA, your CONVERGE migration advisor. I have some insights about your mobility options to share with you.`;
+        } else {
+            conversationPayload.custom_greeting = "Hello! I'm ARIA, your CONVERGE global mobility advisor. I'm here to help you plan your international journey. Let's start by getting to know you a bit better. What's your name?";
         }
 
         console.log('Calling Tavus API with:', JSON.stringify(conversationPayload, null, 2));

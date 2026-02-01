@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import dynamic from 'next/dynamic';
 import { useUserMigrationState } from '@/hooks/useUserMigrationState';
 import { useTavus } from '@/components/providers/TavusProvider';
@@ -31,11 +31,30 @@ interface TrendsReport {
 }
 
 export default function DashboardPage() {
-    const { state, generatePlan, updateGeopoliticalProfile } = useUserMigrationState();
+    const { state, generatePlan, updateGeopoliticalProfile, initialize, updateThoughtSignature } = useUserMigrationState();
     const { updateContext } = useTavus();
     const [currentYear, setCurrentYear] = useState(0);
     const [trendsReport, setTrendsReport] = useState<TrendsReport | null>(null);
     const [, setTrendsLoading] = useState(false);
+
+    // Handle onboarding completion - generate plan from interview data
+    const handleOnboardingComplete = useCallback(async (data: any) => {
+        console.log('Onboarding complete:', data);
+
+        if (data.currentState && data.goalState) {
+            // Initialize state with conversational data
+            const userId = `user_${Date.now()}`;
+            initialize(userId, data.currentState, data.goalState);
+
+            // Update thought signature with interview summary
+            updateThoughtSignature(`User ${data.name}: ${data.nationality} → ${data.destination} (${data.migrationGoal})`);
+
+            // Generate plan from the collected data
+            setTimeout(() => {
+                generatePlan(10).catch(err => console.error('Plan generation failed:', err));
+            }, 500);
+        }
+    }, [initialize, generatePlan, updateThoughtSignature]);
 
     // Auto-generate plan and fetch initial data
     useEffect(() => {
@@ -188,7 +207,7 @@ export default function DashboardPage() {
 
                 {/* Right Column: Expert Link (3 Cols) */}
                 <div className="col-span-12 lg:col-span-3 h-full">
-                    <DashboardExpertHub />
+                    <DashboardExpertHub onOnboardingComplete={handleOnboardingComplete} />
                 </div>
 
             </main>

@@ -3,8 +3,12 @@
 import { useTavus } from './providers/TavusProvider';
 import { useState } from 'react';
 
-export default function ExpertHub() {
-    const { conversationUrl, startConversation, endConversation } = useTavus();
+interface ExpertHubProps {
+    onOnboardingComplete?: (data: any) => void;
+}
+
+export default function ExpertHub({ onOnboardingComplete }: ExpertHubProps) {
+    const { conversationUrl, startConversation, endConversation, isPolling, onboardingResult } = useTavus();
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
@@ -20,16 +24,25 @@ export default function ExpertHub() {
         }
     };
 
+    const handleEndConversation = async () => {
+        const result = await endConversation();
+        if (result && onOnboardingComplete) {
+            onOnboardingComplete(result);
+        }
+    };
+
     return (
         <div className="blueprint-border h-full bg-background/50 backdrop-blur-md flex flex-col">
             {/* Header */}
             <div className="p-4 border-b border-primary/10 flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                    <span className={`w-2 h-2 rounded-full ${conversationUrl ? 'bg-green-500' : 'bg-primary'} animate-pulse`}></span>
-                    <h3 className="font-mono text-xs text-primary tracking-[0.2em] uppercase">Expert_Link</h3>
+                    <span className={`w-2 h-2 rounded-full ${conversationUrl ? 'bg-green-500' : isPolling ? 'bg-yellow-500' : 'bg-primary'} animate-pulse`}></span>
+                    <h3 className="font-mono text-xs text-primary tracking-[0.2em] uppercase">
+                        {isPolling ? 'Analyzing...' : 'Expert_Link'}
+                    </h3>
                 </div>
                 <div className="font-mono text-[9px] text-primary/40">
-                    {conversationUrl ? 'LIVE' : 'TAVUS_NET_V4'}
+                    {conversationUrl ? 'LIVE' : isPolling ? 'PROCESSING' : 'ARIA_v1.0'}
                 </div>
             </div>
 
@@ -43,6 +56,35 @@ export default function ExpertHub() {
                         className="absolute inset-0 w-full h-full border-0"
                         title="Tavus Conversation"
                     />
+                ) : isPolling ? (
+                    // Analyzing State
+                    <div className="flex flex-col items-center gap-4">
+                        <div className="relative size-24">
+                            <div className="absolute inset-0 border-2 border-primary rounded-full animate-spin" style={{ borderTopColor: 'transparent' }}></div>
+                            <div className="absolute inset-2 border border-primary/40 rounded-full animate-ping"></div>
+                            <div className="absolute inset-0 flex items-center justify-center">
+                                <span className="material-symbols-outlined text-2xl text-primary">psychology</span>
+                            </div>
+                        </div>
+                        <div className="font-mono text-xs text-primary uppercase tracking-wider">
+                            Analyzing your data...
+                        </div>
+                        <div className="font-mono text-[9px] text-primary/60">
+                            Generating personalized migration plan
+                        </div>
+                    </div>
+                ) : onboardingResult ? (
+                    // Result Summary
+                    <div className="p-4 text-center">
+                        <div className="font-mono text-xs text-green-500 uppercase mb-2">Analysis Complete</div>
+                        <div className="font-display text-lg text-white mb-1">{onboardingResult.name}</div>
+                        <div className="font-mono text-[10px] text-primary/60">
+                            {onboardingResult.nationality} → {onboardingResult.destination}
+                        </div>
+                        <div className="font-mono text-[9px] text-primary/40 mt-2">
+                            Goal: {onboardingResult.migrationGoal}
+                        </div>
+                    </div>
                 ) : (
                     // Standby Mode
                     <>
@@ -65,7 +107,7 @@ export default function ExpertHub() {
                                 <div className="text-red-500">{error}</div>
                             ) : (
                                 <>
-                                    <div>Ready for guidance...</div>
+                                    <div>Talk to ARIA to start your journey</div>
                                     <div className="text-primary font-bold mt-1">STANDBY_MODE</div>
                                 </>
                             )}
@@ -78,19 +120,24 @@ export default function ExpertHub() {
             <div className="p-4 border-t border-primary/10 space-y-4">
                 <div className="flex justify-between items-center font-mono text-[9px] text-primary/40 uppercase">
                     <span>Signal_Stability</span>
-                    <span className={conversationUrl ? 'text-green-500' : 'text-primary'}>
-                        {conversationUrl ? 'CONNECTED' : '98%'}
+                    <span className={conversationUrl ? 'text-green-500' : isPolling ? 'text-yellow-500' : 'text-primary'}>
+                        {conversationUrl ? 'CONNECTED' : isPolling ? 'ANALYZING' : '98%'}
                     </span>
                 </div>
 
                 {conversationUrl ? (
                     <button
-                        onClick={endConversation}
+                        onClick={handleEndConversation}
                         className="w-full h-10 border border-red-500/40 bg-red-500/5 hover:bg-red-500/10 text-red-500 font-mono text-xs font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-2"
                     >
                         <span className="material-symbols-outlined text-sm">call_end</span>
                         End_Session
                     </button>
+                ) : isPolling ? (
+                    <div className="w-full h-10 border border-yellow-500/40 bg-yellow-500/5 text-yellow-500 font-mono text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2">
+                        <span className="material-symbols-outlined text-sm animate-spin">sync</span>
+                        Processing...
+                    </div>
                 ) : (
                     <button
                         onClick={handleStartConversation}
@@ -98,10 +145,11 @@ export default function ExpertHub() {
                         className="w-full h-10 border border-primary/40 bg-primary/5 hover:bg-primary/10 text-primary font-mono text-xs font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-2 disabled:opacity-50"
                     >
                         <span className="material-symbols-outlined text-sm">videocam</span>
-                        {isLoading ? 'Connecting...' : 'Initialize_Link'}
+                        {isLoading ? 'Connecting...' : 'Start_Interview'}
                     </button>
                 )}
             </div>
         </div>
     );
 }
+

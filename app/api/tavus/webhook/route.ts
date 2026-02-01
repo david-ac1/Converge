@@ -2,6 +2,10 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { TavusWebhookPayload } from '@/types/migration';
+import { onboardingProcessor } from '@/lib/onboardingProcessor';
+
+// Store for conversation transcripts (in production, use a database)
+const conversationStore: Map<string, { transcript: string; status: string; onboardingData?: any }> = new Map();
 
 export async function POST(request: NextRequest) {
     try {
@@ -28,35 +32,64 @@ export async function POST(request: NextRequest) {
 
         console.log(`Received Tavus webhook - Session: ${sessionId}, Event: ${event}`);
 
+        // Get or create conversation record
+        let conversation = conversationStore.get(sessionId) || { transcript: '', status: 'started' };
+
         // Process different event types
         switch (event) {
             case 'started':
                 console.log(`Interview ${sessionId} has started`);
-                // Update application state to show interview is in progress
+                conversation.status = 'in_progress';
+                conversationStore.set(sessionId, conversation);
                 break;
 
             case 'transcript_update':
                 console.log(`Transcript update for ${sessionId}:`, data.transcript);
-                // Process transcript in real-time if needed
+                // Accumulate transcript
+                if (data.transcript) {
+                    conversation.transcript += '\n' + data.transcript;
+                    conversationStore.set(sessionId, conversation);
+                }
                 break;
 
             case 'completed':
                 console.log(`Interview ${sessionId} completed`);
+                conversation.status = 'completed';
 
-                // Process interview insights
+                // Parse the transcript to extract onboarding data
+                if (conversation.transcript) {
+                    try {
+                        const onboardingData = await onboardingProcessor.parseTranscript(conversation.transcript);
+                        conversation.onboardingData = onboardingData;
+                        console.log('Extracted onboarding data:', onboardingData);
+
+                        // Convert to migration snapshot format
+                        const { currentState, goalState } = onboardingProcessor.toMigrationSnapshot(onboardingData);
+
+                        // Store for retrieval by the client
+                        conversationStore.set(sessionId, {
+                            ...conversation,
+                            onboardingData: {
+                                ...onboardingData,
+                                currentState,
+                                goalState
+                            }
+                        });
+                    } catch (parseError) {
+                        console.error('Failed to parse transcript:', parseError);
+                    }
+                }
+
+                // Process interview insights if provided
                 if (data.insights && data.insights.length > 0) {
-                    // Store insights in UserMigrationState
-                    // This would typically integrate with the state manager
                     console.log('Interview insights:', data.insights);
-
-                    // TODO: Update UserMigrationState with insights
-                    // stateManager.addInterviewInsights(data.insights);
                 }
                 break;
 
             case 'failed':
                 console.error(`Interview ${sessionId} failed:`, data.error);
-                // Handle failure - notify user, log error, etc.
+                conversation.status = 'failed';
+                conversationStore.set(sessionId, conversation);
                 break;
 
             default:
@@ -79,15 +112,32 @@ export async function POST(request: NextRequest) {
     }
 }
 
-export async function GET(_request: NextRequest) {
+// GET endpoint to retrieve conversation data (for client polling)
+export async function GET(request: NextRequest) {
+    const { searchParams } = new URL(request.url);
+    const sessionId = searchParams.get('sessionId');
+
+    if (sessionId) {
+        const conversation = conversationStore.get(sessionId);
+        if (conversation) {
+            return NextResponse.json({
+                sessionId,
+                ...conversation
+            });
+        }
+        return NextResponse.json({ error: 'Conversation not found' }, { status: 404 });
+    }
+
+    // Return API info
     return NextResponse.json({
         message: 'Tavus Webhook Endpoint',
-        version: '1.0.0',
+        version: '2.0.0',
         supportedEvents: [
             'started',
             'transcript_update',
             'completed',
             'failed',
         ],
+        usage: 'GET ?sessionId=xxx to retrieve conversation data'
     });
 }
