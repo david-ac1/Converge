@@ -8,6 +8,8 @@ import { PassportHolograph } from '@/components/PassportHolograph';
 import { MilestoneModal } from '@/components/MilestoneModal';
 import { AlternativesPanel } from '@/components/AlternativesPanel';
 import { MigrationStep } from '@/types/migration';
+import ReasoningTrace from '@/components/ReasoningTrace';
+import ResilienceGauge from '@/components/ResilienceGauge';
 
 // Dynamic imports for dashboard components
 const DashboardVolatilityRadar = dynamic(() => import('@/components/VolatilityRadar'), {
@@ -41,6 +43,8 @@ export default function DashboardPage() {
     const [selectedStep, setSelectedStep] = useState<MigrationStep | null>(null);
     const [originPassport, setOriginPassport] = useState<any>(null);
     const [targetPassport, setTargetPassport] = useState<any>(null);
+    const [verificationData, setVerificationData] = useState<{ score: number; thoughts: string[]; risks: string[] } | null>(null);
+    const [isVerifying, setIsVerifying] = useState(false);
 
     // Handle onboarding completion - generate plan from interview data
     const handleOnboardingComplete = useCallback(async (data: any) => {
@@ -95,10 +99,33 @@ export default function DashboardPage() {
             const signature = `Trajectory Optimized: ${data.name || 'User'} [${data.nationality || 'Hidden'}] → ${targetDisplay}`;
 
             // Execute atomic initialization and simulation start
-            initializeSimulation(userId, currentState, goalState, signature).catch(err => {
+            initializeSimulation(userId, currentState, goalState, signature).then(async () => {
+                // Trigger Verification Loop
+                setIsVerifying(true);
+                setVerificationData({ score: 0, thoughts: [], risks: [] }); // Reset
+
+                // Lazy load analyzer
+                const { TrendAnalyzer } = await import('@/lib/trendAnalyzer');
+                const analyzer = new TrendAnalyzer();
+
+                const verification = await analyzer.verifyPlan({
+                    origin: currentState.metadata.citizenship || 'Unknown',
+                    destination: targetDisplay,
+                    strategy: 'Skilled Migration via Express Entry (Simulated)'
+                });
+
+                setVerificationData({
+                    score: verification.resilienceScore,
+                    thoughts: verification.thoughtTrace,
+                    risks: verification.riskFactors
+                });
+                setIsVerifying(false);
+
+            }).catch(err => {
                 console.error('Simulation initialization failed:', err);
                 // Fallback to basic init if atomic fails
                 initialize(userId, currentState, goalState);
+                setIsVerifying(false);
             });
         }
     }, [initialize, initializeSimulation]);
