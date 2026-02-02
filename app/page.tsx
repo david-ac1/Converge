@@ -10,6 +10,7 @@ export default function LandingPage() {
   const router = useRouter();
   const { initialize } = useUserMigrationState();
   const [activeCountryIdx, setActiveCountryIdx] = React.useState(0);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
 
   const countries = [
     // TOP 10
@@ -176,6 +177,8 @@ export default function LandingPage() {
           </div>
           <h2 className="text-xl font-black leading-tight tracking-tighter font-display uppercase tracking-[-0.05em]">CONVERGE</h2>
         </div>
+
+        {/* Desktop Nav */}
         <nav className="hidden lg:flex items-center gap-10 font-mono text-[10px] tracking-widest">
           {presets.map((p) => (
             <span
@@ -187,7 +190,20 @@ export default function LandingPage() {
             </span>
           ))}
         </nav>
-        <div className="flex items-center gap-4">
+
+        {/* Mobile Menu Toggle */}
+        <button
+          className="lg:hidden text-primary p-2"
+          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+        >
+          <div className="space-y-1.5">
+            <span className={`block w-6 h-0.5 bg-current transition-transform ${isMobileMenuOpen ? 'rotate-45 translate-y-2' : ''}`} />
+            <span className={`block w-6 h-0.5 bg-current transition-opacity ${isMobileMenuOpen ? 'opacity-0' : ''}`} />
+            <span className={`block w-6 h-0.5 bg-current transition-transform ${isMobileMenuOpen ? '-rotate-45 -translate-y-2' : ''}`} />
+          </div>
+        </button>
+
+        <div className="hidden lg:flex items-center gap-4">
           <span className="font-mono text-[10px] text-primary/70 hidden sm:inline uppercase">status: encrypted_link</span>
           <div className="h-8 w-px bg-primary/20"></div>
           <button className="bg-primary/10 border border-primary/30 text-primary px-3 py-1 rounded-sm font-mono text-[11px] font-bold">
@@ -195,6 +211,30 @@ export default function LandingPage() {
           </button>
         </div>
       </header>
+
+      {/* Mobile Menu Overlay */}
+      {isMobileMenuOpen && (
+        <div className="fixed inset-0 z-40 bg-black/95 backdrop-blur-xl lg:hidden flex flex-col pt-24 px-6 gap-8">
+          {presets.map((p) => (
+            <span
+              key={p.id}
+              onClick={() => {
+                handleNavClick(p);
+                setIsMobileMenuOpen(false);
+              }}
+              className="text-2xl font-black text-white/80 hover:text-primary transition-colors cursor-pointer uppercase font-display tracking-tighter"
+            >
+              {p.label}
+            </span>
+          ))}
+          <div className="mt-8 pt-8 border-t border-white/10 flex flex-col gap-4">
+            <div className="font-mono text-[10px] text-primary/70 uppercase">status: encrypted_link</div>
+            <button className="bg-primary/10 border border-primary/30 text-primary px-4 py-3 rounded-sm font-mono text-[12px] font-bold w-full text-left">
+              v1.0.4-STABLE
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Main Content */}
       <main className="flex-1 relative z-10">
