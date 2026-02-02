@@ -142,6 +142,8 @@ export default function LandingPage() {
   const handleNavClick = (preset: typeof presets[0]) => {
     if (preset.id === 'passport') {
       router.push('/passport-logic');
+    } else if (preset.id === 'corridor') {
+      router.push('/convergence');
     } else {
       handleInit(preset);
     }

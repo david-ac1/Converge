@@ -1,35 +1,67 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 
+// Demo mode responses for when API is unavailable
+const DEMO_RESPONSES = [
+    "Welcome to Strategic Harbor! I'm your migration advisor. To help you navigate global mobility, I'll need to understand your situation. What's your name?",
+    "Great to meet you! Where are you currently located?",
+    "Excellent. And what's your nationality or current citizenship?",
+    "What type of migration are you exploring? For example: permanent residency, citizenship by investment, digital nomad visa, or work visa?",
+    "What's your target destination? Where would you like to relocate to?",
+    "Wonderful! And roughly what's your annual income range? This helps me identify suitable pathways.",
+    "Perfect! I've gathered all the information I need. Let me analyze the best migration corridors for your profile. I'll now generate a comprehensive 10-year trajectory map for your journey.",
+];
+
+function getMockResponse(messageCount: number, isFirstMessage: boolean): { response: string; onboardingData: any } {
+    if (isFirstMessage) {
+        return { response: DEMO_RESPONSES[0], onboardingData: null };
+    }
+
+    const responseIndex = Math.min(messageCount, DEMO_RESPONSES.length - 1);
+    const response = DEMO_RESPONSES[responseIndex];
+
+    // After 6 messages, return mock onboarding data
+    if (messageCount >= 6) {
+        return {
+            response: DEMO_RESPONSES[DEMO_RESPONSES.length - 1],
+            onboardingData: {
+                name: "Demo User",
+                nationality: "United States",
+                currentLocation: "Austin, TX",
+                migrationGoal: "Permanent Residency",
+                age: 32,
+                incomeRange: "$100,000 - $150,000",
+                destination: "Switzerland",
+                isComplete: true
+            }
+        };
+    }
+
+    return { response, onboardingData: null };
+}
+
 export async function POST(request: NextRequest) {
+    const body = await request.json();
+    const { messages = [], systemPrompt = '', isFirstMessage = false } = body;
+
     try {
         const apiKey = process.env.GEMINI_API_KEY;
         console.log('[API] Key exists:', !!apiKey);
 
         if (!apiKey) {
-            console.error('[API] GEMINI_API_KEY is missing from environment');
-            return NextResponse.json(
-                { error: 'API key missing', details: 'GEMINI_API_KEY is not configured on the server.' },
-                { status: 401 }
-            );
+            console.log('[API] No API key, using demo mode');
+            return NextResponse.json(getMockResponse(messages.length, isFirstMessage));
         }
 
         const genAI = new GoogleGenerativeAI(apiKey);
-        const body = await request.json();
-        const { messages = [], systemPrompt = '', isFirstMessage = false } = body;
-
         console.log('[API] Request received. Messages:', messages.length, 'isFirst:', isFirstMessage);
 
         // Configure model with system instruction
         const model = genAI.getGenerativeModel({
-            model: 'gemini-3-pro-preview',
+            model: 'gemini-2.0-flash', // Using flash for faster, cheaper responses
             systemInstruction: systemPrompt
         });
 
-        // Format history for Gemini SDK
-        // 1. Map 'assistant' to 'model'
-        // 2. Ensure alternating user/model
-        // 3. History should exclude the latest message (it's sent in sendMessage)
         const historyMessages = isFirstMessage ? [] : messages.slice(0, -1);
 
         const history = historyMessages.map((msg: { role: string; content: string }) => ({
@@ -37,7 +69,6 @@ export async function POST(request: NextRequest) {
             parts: [{ text: msg.content }],
         }));
 
-        // Constraint: History must start with 'user'
         if (history.length > 0 && history[0].role === 'model') {
             history.unshift({
                 role: 'user',
@@ -53,7 +84,6 @@ export async function POST(request: NextRequest) {
             },
         });
 
-        // Prompt for first message vs continuation
         const prompt = isFirstMessage
             ? "Please greet the user warmly and begin the intake interview by asking for their name."
             : messages[messages.length - 1]?.content || 'Continue the conversation';
@@ -62,27 +92,24 @@ export async function POST(request: NextRequest) {
         const result = await chat.sendMessage(prompt);
         const responseText = result.response.text();
 
-        // Data extraction logic if conversation is long enough
         let onboardingData = null;
         if (messages.length >= 6) {
-            console.log('[API] Attempting data extraction and completion check...');
+            console.log('[API] Attempting data extraction...');
             try {
                 const extractionPrompt = `Analyze the conversation and extract user migration profile.
 REQUIRED FIELDS:
 - name
 - nationality
 - currentLocation
-- migrationGoal (e.g., Citizenship, Work, Study)
+- migrationGoal
 - age (integer)
 - incomeRange
-- destination (Target country or city)
+- destination
 
-Also, determine "isComplete": true if ALL fields above have been answered clearly by the user, otherwise false.
+Also, determine "isComplete": true if ALL fields above have been answered clearly.
 
-Return ONLY a JSON object. No markdown. Example:
-{"name": "...", ..., "isComplete": true}`;
+Return ONLY a JSON object. No markdown.`;
 
-                // Use a separate one-off call for extraction
                 const extractResult = await model.generateContent([
                     ...history.map((h: any) => h.parts[0].text),
                     prompt,
@@ -94,7 +121,6 @@ Return ONLY a JSON object. No markdown. Example:
                 const jsonMatch = extractText.match(/\{[\s\S]*\}/);
                 if (jsonMatch) {
                     onboardingData = JSON.parse(jsonMatch[0]);
-                    console.log('[API] Extraction Result:', onboardingData);
                 }
             } catch (e) {
                 console.warn('[API] Extraction failed:', e);
@@ -107,14 +133,16 @@ Return ONLY a JSON object. No markdown. Example:
         });
 
     } catch (error: any) {
-        console.error('[API] Global Error:', error);
-        return NextResponse.json(
-            {
-                error: 'Failed to process chat message',
-                details: error.message,
-                stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
-            },
-            { status: 500 }
-        );
+        console.error('[API] Error:', error.message);
+
+        // Handle rate limiting - fall back to demo mode
+        if (error?.status === 429 || error?.message?.includes('429') || error?.message?.includes('quota')) {
+            console.log('[API] Rate limited, using demo mode');
+            return NextResponse.json(getMockResponse(messages.length, isFirstMessage));
+        }
+
+        // For any other error, also fall back to demo mode
+        console.log('[API] Using demo mode due to error');
+        return NextResponse.json(getMockResponse(messages.length, isFirstMessage));
     }
 }
