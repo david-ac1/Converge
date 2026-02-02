@@ -80,6 +80,26 @@ Converge isn't just a wrapper. We use Gemini for:
 *   **Visuals:** Three.js (React Three Fiber) for the Holograph, `react-simple-maps` for the Heatmap.
 *   **Resilience:** **"Demo Mode" Architecture**. If the API fails, the system seamlessly switches to high-fidelity mock data. It *cannot* break on stage.
 
+### 📂 App Structure
+```text
+/app
+ ├── /api               # AI Intelligence Layer (Gemini-Powered)
+ │   ├── /chat          # Voice/Text Routing & Intent Analysis
+ │   ├── /convergence   # Heatmap Prediction Engine
+ │   ├── /passport      # Holographic Projection Logic
+ │   └── /terminal      # News Fetching & Categorization
+ │
+ ├── /convergence       # [03. HEATMAP] Interactive Global Map
+ ├── /passport-logic    # [02. IDENTITY] 3D Holographic Passport
+ ├── /terminal          # [04. INTEL] Cyberpunk News Feed
+ └── page.tsx           # [01. DASHBOARD] Command Center
+/lib
+ ├── convergenceEngine  # Risk Signaling & Pressure Scoring
+ ├── newsEngine         # Search Grounding & Mock Fallbacks
+ ├── passportEngine     # Power Trajectory Simulation
+ └── trendAnalyzer      # Policy Shift Detection
+```
+
 ---
 
 ## 6. Example Scenario
