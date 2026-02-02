@@ -109,9 +109,10 @@ Return ONLY the JSON object, no markdown.
             'not specified': 60000 // Default estimate
         };
 
+        const safeIncomeRange = String(data.incomeRange || '');
         const incomeKey = Object.keys(incomeMap).find(k =>
-            data.incomeRange.toLowerCase().includes(k.split('-')[0]) ||
-            data.incomeRange.toLowerCase().includes(k)
+            safeIncomeRange.toLowerCase().includes(k.split('-')[0]) ||
+            safeIncomeRange.toLowerCase().includes(k)
         ) || 'not specified';
 
         return {

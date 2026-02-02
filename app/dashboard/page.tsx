@@ -56,7 +56,11 @@ export default function DashboardPage() {
                 timestamp: new Date(),
                 location: data.currentLocation || data.nationality || 'Nigeria',
                 profession: data.profession || 'Professional',
-                income: data.incomeRange ? parseInt(data.incomeRange.replace(/[^0-9]/g, '')) || 50000 : 50000,
+                income: typeof data.incomeRange === 'number'
+                    ? data.incomeRange
+                    : data.incomeRange
+                        ? parseInt(data.incomeRange.replace(/[^0-9]/g, '')) || 50000
+                        : 50000,
                 skills: [],
                 qualifications: [],
                 familyStatus: 'Single',
