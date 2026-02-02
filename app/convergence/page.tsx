@@ -59,9 +59,51 @@ export default function ConvergencePage() {
         setSelectedCountry(null);
     };
 
+    // Fetch specific country data if missing
+    const fetchCountryDetails = async (countryCode: string) => {
+        try {
+            const response = await fetch('/api/convergence', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    originCountry,
+                    targetCountries: [countryCode]
+                })
+            });
+
+            if (!response.ok) return;
+
+            const data: ConvergenceReport = await response.json();
+            const newCountryData = data.convergenceData[0];
+
+            if (newCountryData) {
+                setConvergenceData(prev => {
+                    if (!prev) return data;
+                    // specialized merge to avoid duplicates
+                    const existing = prev.convergenceData.filter(c => c.countryCode !== countryCode);
+                    return {
+                        ...prev,
+                        convergenceData: [...existing, newCountryData]
+                    };
+                });
+            }
+        } catch (err) {
+            console.error('Failed to fetch details for:', countryCode);
+        }
+    };
+
     // Handle country click
     const handleCountryClick = (code: string) => {
-        setSelectedCountry(code === selectedCountry ? null : code);
+        const isSelected = code === selectedCountry;
+        setSelectedCountry(isSelected ? null : code);
+
+        // If selecting a new country and we don't have its data, fetch it
+        if (!isSelected && code && convergenceData) {
+            const hasData = convergenceData.convergenceData.some(c => c.countryCode === code);
+            if (!hasData) {
+                fetchCountryDetails(code);
+            }
+        }
     };
 
     // Get selected country data
@@ -69,6 +111,28 @@ export default function ConvergencePage() {
         selectedCountry && convergenceData
             ? convergenceData.convergenceData.find(c => c.countryCode === selectedCountry) || null
             : null;
+
+    // Temporary mock for loading state if selected but no data yet
+    const resolveSelectedData = (): CountryConvergence | null => {
+        if (!selectedCountry) return null;
+        if (selectedCountryData) return selectedCountryData;
+
+        // Return a loading placeholder structure
+        return {
+            country: 'Loading...',
+            countryCode: selectedCountry,
+            pressureScore: 0,
+            pressureFromOrigin: 0,
+            isTop15: false,
+            trend: 'stable',
+            topOrigins: [],
+            pathwayCongestion: { student: 0, skilled: 0, investment: 0, family: 0 },
+            predictions: [{ type: 'neutral', title: 'Analyzing...', summary: 'Fetching real-time convergence data...', confidence: 0, timeframe: '...' }],
+            opportunityScore: 0
+        };
+    };
+
+    const activeData = resolveSelectedData();
 
     return (
         <div className="min-h-screen bg-gradient-to-b from-[#0a0a0f] via-[#10101a] to-[#0a0a0f] text-white flex flex-col">
@@ -170,7 +234,7 @@ export default function ConvergencePage() {
                 {/* Right Sidebar - Country Detail Panel */}
                 <aside className="w-80 flex-shrink-0">
                     <CountryPressurePanel
-                        country={selectedCountryData}
+                        country={activeData}
                         originCountry={originCountry}
                         onClose={() => setSelectedCountry(null)}
                     />

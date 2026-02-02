@@ -144,6 +144,8 @@ export default function LandingPage() {
       router.push('/passport-logic');
     } else if (preset.id === 'corridor') {
       router.push('/convergence');
+    } else if (preset.id === 'terminal') {
+      router.push('/terminal');
     } else {
       handleInit(preset);
     }
