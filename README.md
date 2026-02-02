@@ -1,8 +1,8 @@
 # 🧭 Converge — The Operating System for Global Citizenship
 
 **See where you can go — and where the world is going next.**
+<img width="1889" height="825" alt="Screenshot 2026-02-02 171834" src="https://github.com/user-attachments/assets/fd33c62f-fc0c-4ce2-83ce-9e6ad5e43eec" />
 
-![Converge Banner](https://via.placeholder.com/1200x600/0a0a0f/00D1FF?text=CONVERGE+%7C+FUTURE-AWARE+MOBILITY)
 
 ---
 
@@ -49,21 +49,25 @@ Converge introduces:
 *   **Hybrid AI Interface:** Switch seamlessly between Text and **Voice** interactions to plan your move.
 *   **Mobility Metrics:** Real-time tracking of "Visa-Free Power" and "Access Nodes".
 *   **Smart Parsing:** Turns conversational chaos into a structured `MigrationState`.
+<img width="1919" height="826" alt="Screenshot 2026-02-02 172159" src="https://github.com/user-attachments/assets/61965277-a271-4e13-bffa-8786c34970ce" />
 
 ### [02. PASSPORT_LOGIC] The Identity Engine
 *   **Holographic Projection:** A physics-based 3D visualization of your target identity.
 *   **Timeline Simulation:** Projects the "Time-to-Citizenship" and value accretion over 1, 3, and 5 years.
 *   **Neural Access Map:** Visualizes how a new passport unlocks specific global regions.
+<img width="1916" height="819" alt="Screenshot 2026-02-02 172148" src="https://github.com/user-attachments/assets/1f5ec916-d7e8-4468-9b3c-10ce08164247" />
 
 ### [03. CONVERGENCE] The Strategic Map
 *   **Pressure Heatmap:** A global map that pulses based on *your* specific nationality and intended destination.
 *   **Crowd Signals:** Detects when a route (e.g., "Canada Student Visa") is over-congested.
 *   **Policy Predictions:** AI-generated forecasts of tightening restrictions or emerging opportunities (e.g., "Chile Entrepreneur Visa").
+<img width="1915" height="827" alt="Screenshot 2026-02-02 172041" src="https://github.com/user-attachments/assets/ac5cbaf9-f386-4eba-8ef5-0763c07e500d" />
 
 ### [04. TERMINAL] The Intelligence Wire
 *   **Cyberpunk News Feed:** A "floating" masonry grid of real-time global intelligence.
 *   **Gemini Search Grounding:** Fetches *actual* live data on policy changes, crises, and visa innovations.
 *   **Smart Categorization:** Automatically tags news as `Policy 🏛️`, `Crisis ⚠️`, or `Innovation 💡`.
+<img width="1919" height="824" alt="Screenshot 2026-02-02 171956" src="https://github.com/user-attachments/assets/6999d1ff-0a2c-4cba-85fd-712428241d44" />
 
 ---
 
@@ -132,5 +136,5 @@ Converge isn't just a wrapper. We use Gemini for:
 ---
 
 ## 🔗 Links
-*   [Demo Video](#)
-*   [Live Prototype](#)
+*   [Demo Video](https://www.youtube.com/watch?v=0T38lMZdMbM)
+*   [Live Prototype](https://converge-kappa.vercel.app/)
