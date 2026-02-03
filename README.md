@@ -137,6 +137,25 @@ Converge isn't just a wrapper. We use Gemini for:
 
 ---
 
+
+---
+
+## 9. Engineering Excellence: Accessibility & SEO
+Converge is built for **everyone**, complying with **WCAG 2.1 AA** standards and modern SEO best practices.
+
+### ♿ Accessibility (The Universal Layer)
+*   **Keyboard Navigation:** Full support for non-mouse users. Tab through the "Golden Path" (News -> Plan -> Verify).
+*   **Semantic HTML:** Built with standard `<main>`, `<nav>`, `<header>` architecture for screen reader compatibility.
+*   **ARIA Integration:** Interactive maps and data visualizations include descriptive ARIA labels.
+*   **Reduced Motion:** Animations respect system preferences for sensitive users.
+
+### 🔍 discoverability (SEO)
+*   **Rich Metadata:** Comprehensive Open Graph (OG) and Twitter Card tags for social sharing.
+*   **Structured Data:** JSON-LD schema defines the platform as a `SoftwareApplication` for search engines.
+*   **Crawl Optimization:** Optimized `robots.txt` and `sitemap.xml` for indexability.
+
+---
+
 ## 🔗 Links
 *   [Demo Video](https://www.youtube.com/watch?v=0T38lMZdMbM)
 *   [Live Prototype](https://converge-kappa.vercel.app/)

@@ -167,6 +167,25 @@ export default function LandingPage() {
         </svg>
       </div>
 
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            '@context': 'https://schema.org',
+            '@type': 'SoftwareApplication',
+            name: 'Converge',
+            applicationCategory: 'ProductivityApplication',
+            operatingSystem: 'Web',
+            description: 'Autonomous planning engine for global mobility trajectories.',
+            offers: {
+              '@type': 'Offer',
+              price: '0',
+              priceCurrency: 'USD',
+            },
+          }),
+        }}
+      />
+
       {/* Header */}
       <header className="flex items-center justify-between border-b border-primary/10 bg-background/80 backdrop-blur-md px-6 md:px-10 py-4 sticky top-0 z-50">
         <div className="flex items-center gap-4">
@@ -260,6 +279,7 @@ export default function LandingPage() {
             <div className="flex flex-col sm:flex-row gap-6 items-center">
               <button
                 onClick={() => handleInit()}
+                title="Initialize migration simulation with default parameters"
                 className="w-full sm:w-auto min-w-[240px] bg-primary text-black h-14 px-8 font-mono text-sm font-black tracking-widest hover:bg-white transition-all shadow-[0_0_30px_rgba(0,209,255,0.3)]"
               >
                 <span className="cursor-blink">INIT_SIM_v1.0</span>
@@ -291,6 +311,7 @@ export default function LandingPage() {
                 <img
                   src={getFlagUrl(activeCountry.code, 'medium')}
                   alt={activeCountry.name}
+                  title={`Flag of ${activeCountry.name}`}
                   className="w-6 h-auto opacity-80 group-hover:opacity-100 transition-opacity"
                 />
               </div>

@@ -212,14 +212,14 @@ export default function DashboardPage() {
     return (
         <div className="min-h-screen flex flex-col bg-background text-foreground overflow-hidden">
             {/* Top Navigation */}
-            <header className="h-14 border-b border-primary/10 flex items-center justify-between px-6 bg-background/80 backdrop-blur-md z-40 sticky top-0">
+            <header className="h-14 border-b border-primary/10 flex items-center justify-between px-6 bg-background/80 backdrop-blur-md z-40 sticky top-0" role="banner">
                 <div className="flex items-center gap-4">
-                    <Link href="/" className="font-display font-black tracking-tight text-lg text-white uppercase hover:text-primary transition-colors">CONVERGE</Link>
+                    <Link href="/" className="font-display font-black tracking-tight text-lg text-white uppercase hover:text-primary transition-colors" aria-label="Go to Homepage" title="Return to Landing Page">CONVERGE</Link>
                     <div className="h-4 w-px bg-primary/20"></div>
                     <div className="font-mono text-[10px] text-primary/60 tracking-widest uppercase">/ SIMULATION_DASHBOARD</div>
                 </div>
                 {state?.activePlan?.recommendationScore !== undefined && (
-                    <div className="flex items-center gap-2 px-3 py-1 bg-primary/10 border border-primary/30 rounded-full">
+                    <div className="flex items-center gap-2 px-3 py-1 bg-primary/10 border border-primary/30 rounded-full" aria-label={`Recommendation Score: ${state.activePlan.recommendationScore}%`}>
                         <span className="font-mono text-[10px] text-primary/60 uppercase">Net_Recommendation:</span>
                         <span className={`font-mono text-xs font-bold ${state.activePlan.recommendationScore > 70 ? 'text-green-400' : 'text-primary'}`}>
                             {state.activePlan.recommendationScore}%
@@ -235,17 +235,19 @@ export default function DashboardPage() {
                                     window.location.reload();
                                 }
                             }}
+                            aria-label="Clear simulation data"
+                            title="Reset entire simulation and clear stored data"
                             className="px-3 py-1 border border-red-500/30 text-red-400 hover:bg-red-500/10 text-[9px] font-mono uppercase transition-colors rounded-sm"
                         >
                             CLEAR_VECTOR
                         </button>
                     )}
                     {isStateLoading && (
-                        <div className="flex items-center gap-2 px-3 py-1 bg-primary/10 border border-primary/30 rounded-full animate-pulse">
+                        <div className="flex items-center gap-2 px-3 py-1 bg-primary/10 border border-primary/30 rounded-full animate-pulse" role="status" aria-label="Loading simulation">
                             <span className="font-mono text-[10px] text-primary uppercase">Pivoting_Trajectory...</span>
                         </div>
                     )}
-                    <div className="flex items-center gap-6 font-mono text-[10px] text-primary/40 uppercase">
+                    <div className="flex items-center gap-6 font-mono text-[10px] text-primary/40 uppercase" aria-hidden="true">
                         <span>RAM: 64%</span>
                         <span>CPU: 12%</span>
                         <span className="text-primary">NET: SECURE</span>
@@ -254,7 +256,7 @@ export default function DashboardPage() {
             </header>
 
             {/* Main Grid Layout */}
-            <main className="flex-1 p-6 grid grid-cols-12 gap-6 h-[calc(100vh-56px)] overflow-hidden">
+            <main className="flex-1 p-6 grid grid-cols-12 gap-6 h-[calc(100vh-56px)] overflow-hidden" role="main">
 
                 {/* Left Column: Volatility & Metrics (3 Cols) */}
                 <div className="col-span-12 lg:col-span-3 flex flex-col gap-6 h-full overflow-y-auto pr-2 custom-scrollbar">

@@ -38,9 +38,10 @@ export default function NewsTerminal({ items, isLoading, onRefresh }: NewsTermin
                     <div className="flex gap-2 overflow-x-auto w-full md:w-auto pb-2 md:pb-0 scrollbar-hide">
                         <button
                             onClick={() => setSelectedCategory('all')}
+                            aria-label="Filter by all categories"
                             className={`px-3 py-1.5 rounded-sm font-mono text-[10px] uppercase border transition-all whitespace-nowrap ${selectedCategory === 'all'
-                                    ? 'bg-white text-black border-white'
-                                    : 'bg-transparent text-white/60 border-white/20 hover:border-white/50'
+                                ? 'bg-white text-black border-white'
+                                : 'bg-transparent text-white/60 border-white/20 hover:border-white/50'
                                 }`}
                         >
                             ALL FEEDS
@@ -49,9 +50,11 @@ export default function NewsTerminal({ items, isLoading, onRefresh }: NewsTermin
                             <button
                                 key={cat}
                                 onClick={() => setSelectedCategory(cat)}
+                                aria-label={`Filter by ${cat} category`}
+                                title={`Show ${cat} news`}
                                 className={`px-3 py-1.5 rounded-sm font-mono text-[10px] uppercase border transition-all whitespace-nowrap ${selectedCategory === cat
-                                        ? 'bg-primary/20 text-primary border-primary'
-                                        : 'bg-transparent text-white/60 border-white/20 hover:border-white/50'
+                                    ? 'bg-primary/20 text-primary border-primary'
+                                    : 'bg-transparent text-white/60 border-white/20 hover:border-white/50'
                                     }`}
                             >
                                 {cat}
@@ -76,6 +79,8 @@ export default function NewsTerminal({ items, isLoading, onRefresh }: NewsTermin
                         <button
                             onClick={onRefresh}
                             disabled={isLoading}
+                            aria-label="Refresh news feed"
+                            title="Force refresh news feed"
                             className={`p-1.5 border border-primary/30 rounded-sm bg-primary/10 text-primary hover:bg-primary/20 transition-all ${isLoading ? 'opacity-50' : ''}`}
                         >
                             {isLoading ? (

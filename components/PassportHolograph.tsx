@@ -25,7 +25,12 @@ function SinglePassportCard({ passport }: { passport: PassportData }) {
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.5 }}
-            className="relative w-[160px] h-[220px] rounded-[3px] shadow-[0_25px_50px_-12px_rgba(0,0,0,0.7)] overflow-hidden flex flex-col group cursor-pointer"
+            className="relative w-[160px] h-[220px] rounded-[3px] shadow-[0_25px_50px_-12px_rgba(0,0,0,0.7)] overflow-hidden flex flex-col group cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary/50"
+            onClick={() => { }} // No-op for now unless we add an action
+            role="img"
+            aria-label={`Passport of ${passport.country}`}
+            title={`View details for ${passport.country}`}
+            tabIndex={0}
             style={{
                 backgroundColor: passport.color || '#1a1a2e',
                 backgroundImage: `linear-gradient(145deg,rgba(255,255,255,0.05) 0%,transparent 50%,rgba(0,0,0,0.2) 100%),url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="10" height="10" patternUnits="userSpaceOnUse"><circle cx="5" cy="5" r="0.5" fill="rgba(210,180,140,0.04)"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>')`

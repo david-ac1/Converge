@@ -23,8 +23,48 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "CONVERGE | Global Mobility Blueprint",
-  description: "Autonomous planning engine for global mobility trajectories.",
+  title: {
+    default: "CONVERGE | Global Mobility Blueprint",
+    template: "%s | CONVERGE"
+  },
+  description: "Autonomous planning engine for global mobility trajectories. Analyze visas, passports, and geopolitical trends.",
+  keywords: ["global mobility", "visa planning", "second passport", "migration", "AI agent", "geopolitics"],
+  authors: [{ name: "Converge AI" }],
+  creator: "Converge Systems",
+  openGraph: {
+    type: "website",
+    locale: "en_US",
+    url: "https://converge.app",
+    title: "CONVERGE | Global Mobility Blueprint",
+    description: "Autonomous planning engine for global mobility trajectories.",
+    siteName: "CONVERGE",
+    images: [
+      {
+        url: "/og-image.jpg",
+        width: 1200,
+        height: 630,
+        alt: "Converge System Interface",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "CONVERGE | Global Mobility Blueprint",
+    description: "Autonomous planning engine for global mobility trajectories.",
+    images: ["/og-image.jpg"],
+    creator: "@converge_ai",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
 };
 
 export default function RootLayout({

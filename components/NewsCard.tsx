@@ -43,8 +43,14 @@ export default function NewsCard({ item, index }: NewsCardProps) {
         >
             {/* Header */}
             <div
-                className="p-4 cursor-pointer"
+                className="p-4 cursor-pointer focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white/20 rounded-t-lg"
                 onClick={() => setIsExpanded(!isExpanded)}
+                onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && setIsExpanded(!isExpanded)}
+                role="button"
+                tabIndex={0}
+                aria-expanded={isExpanded}
+                aria-label={`${item.headline} - ${isExpanded ? 'Collapse' : 'Expand'} for details`}
+                title={isExpanded ? "Click to collapse" : "Click to read more"}
             >
                 <div className="flex items-center justify-between mb-2">
                     <div className={`px-2 py-0.5 rounded text-[10px] uppercase font-mono tracking-wider border ${colorClass}`}>
@@ -91,7 +97,7 @@ export default function NewsCard({ item, index }: NewsCardProps) {
                             <div className="flex items-center justify-between mt-4">
                                 <div className="flex items-center gap-2">
                                     <span className={`w-1.5 h-1.5 rounded-full ${item.sentiment === 'positive' ? 'bg-green-500' :
-                                            item.sentiment === 'negative' ? 'bg-red-500' : 'bg-yellow-500'
+                                        item.sentiment === 'negative' ? 'bg-red-500' : 'bg-yellow-500'
                                         }`} />
                                     <span className="text-[10px] text-white/40 capitalize">
                                         {item.sentiment} Sentiment
@@ -103,6 +109,7 @@ export default function NewsCard({ item, index }: NewsCardProps) {
                                     rel="noopener noreferrer"
                                     className="text-[10px] text-cyan-400 hover:text-cyan-300 flex items-center gap-1"
                                     onClick={(e) => e.stopPropagation()}
+                                    title={`Open original article from ${item.source}`}
                                 >
                                     READ SOURCE ↗
                                 </a>
@@ -114,7 +121,7 @@ export default function NewsCard({ item, index }: NewsCardProps) {
 
             {/* Decor Corner */}
             <div className={`absolute top-0 right-0 w-2 h-2 border-t border-r ${item.category === 'crisis' ? 'border-red-500' :
-                    item.category === 'innovation' ? 'border-cyan-500' : 'border-white/30'
+                item.category === 'innovation' ? 'border-cyan-500' : 'border-white/30'
                 }`} />
         </motion.div>
     );
