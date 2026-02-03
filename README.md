@@ -1,4 +1,4 @@
-# 🧭 Converge — The Operating System for Global Citizenship
+# 🧭 Converge — The System for Global Mobility
 
 **See where you can go — and where the world is going next.**
 <img width="1889" height="825" alt="Screenshot 2026-02-02 171834" src="https://github.com/user-attachments/assets/fd33c62f-fc0c-4ce2-83ce-9e6ad5e43eec" />
