@@ -48,13 +48,13 @@ Converge introduces:
 ### [01. DASHBOARD] The Command Center
 *   **Hybrid AI Interface:** Switch seamlessly between Text and **Voice** interactions to plan your move.
 *   **Mobility Metrics:** Real-time tracking of "Visa-Free Power" and "Access Nodes".
-*   **Autonomous Verification:** The "Resilience Gauge" runs a self-testing loop, red-teaming your migration plan against adverse scenarios (e.g., recessions, quota cuts).
+*   **Autonomous Directive (Agentic Loop):** The "Resilience Gauge" is not static. It runs a **continuous background loop**, red-teaming your migration plan against adverse scenarios (e.g., recessions, quota cuts) without user intervention.
 *   **Smart Parsing:** Turns conversational chaos into a structured `MigrationState`.
 <img width="1919" height="826" alt="Screenshot 2026-02-02 172159" src="https://github.com/user-attachments/assets/61965277-a271-4e13-bffa-8786c34970ce" />
 
 ### [02. PASSPORT_LOGIC] The Identity Engine
 *   **Holographic Projection:** A physics-based 3D visualization of your target identity.
-*   **Reasoning Trace:** Watch the "Glass Box" AI logic as it weighs timelines against improved mobility scores.
+*   **Continuous Reasoning Trace:** Watch the "Glass Box" AI **System 2** logic as it iteratively weighs complex trade-offs (Timelines vs. Mobility Scores) in real-time.
 *   **Timeline Simulation:** Projects the "Time-to-Citizenship" and value accretion over 1, 3, and 5 years.
 *   **Neural Access Map:** Visualizes how a new passport unlocks specific global regions.
 <img width="1916" height="819" alt="Screenshot 2026-02-02 172148" src="https://github.com/user-attachments/assets/1f5ec916-d7e8-4468-9b3c-10ce08164247" />
