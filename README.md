@@ -75,7 +75,7 @@ Converge introduces:
 
 ## 5. Technical Architecture
 
-### 🧠 The Brain (Gemini 2.0 Flash)
+### 🧠 The Brain (Gemini 3.0 pro)
 Converge isn't just a wrapper. We use Gemini for:
 *   **Reasoning:** Determining if a user is eligible for a visa.
 *   **Prediction:** Forecasting policy shifts based on congestion data.
