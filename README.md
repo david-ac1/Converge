@@ -76,8 +76,8 @@ Converge introduces:
 ## 5. Technical Architecture
 
 ### 🧠 The Brain (Gemini 3.0 pro)
-Converge isn't just a wrapper. We use Gemini for:
-*   **Reasoning:** Determining if a user is eligible for a visa.
+Converge uses Gemini for:
+*   **Reasoning:** Determining if a user is eligible for a migration program.
 *   **Prediction:** Forecasting policy shifts based on congestion data.
 *   **Grounding:** Fetching live verified news in the Terminal.
 
@@ -132,9 +132,6 @@ Converge isn't just a wrapper. We use Gemini for:
 1.  **Deep Integration:** Uses Gemini for reasoning, prediction, *and* live grounding.
 2.  **Resilience:** Built-in safeguards for live demos.
 3.  **Novelty:** It addresses the *timing* of migration, which no one else talks about.
-
-**Converge is decision infrastructure for the post-border world.**
-
 ---
 
 
@@ -155,6 +152,7 @@ Converge is built for **everyone**, complying with **WCAG 2.1 AA** standards and
 *   **Crawl Optimization:** Optimized `robots.txt` and `sitemap.xml` for indexability.
 
 ---
+**Converge is decision infrastructure for the post-border world.**
 
 ## 🔗 Links
 *   [Demo Video](https://www.youtube.com/watch?v=0T38lMZdMbM)
