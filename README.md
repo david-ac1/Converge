@@ -47,15 +47,15 @@ Converge introduces:
 
 ### [01. DASHBOARD] The Command Center
 *   **Hybrid AI Interface:** Switch seamlessly between Text and **Voice** interactions to plan your move.
-*   **Mobility Metrics:** Real-time tracking of "Visa-Free Power" and "Access Nodes".
+*   **Mobility Metrics:** Real-time tracking of Visa-Free Power and Access Nodes.
 *   **Autonomous Directive (Agentic Loop):** The "Resilience Gauge" is not static. It runs a **continuous background loop**, red-teaming your migration plan against adverse scenarios (e.g., recessions, quota cuts) without user intervention.
 *   **Smart Parsing:** Turns conversational chaos into a structured `MigrationState`.
+*  **Timeline Simulation:** Projects the "Time-to-Citizenship" and value accretion over 1, 3, and 5 years.
 <img width="1919" height="826" alt="Screenshot 2026-02-02 172159" src="https://github.com/user-attachments/assets/61965277-a271-4e13-bffa-8786c34970ce" />
 
 ### [02. PASSPORT_LOGIC] The Identity Engine
-*   **Holographic Projection:** A physics-based 3D visualization of your target identity.
-*   **Continuous Reasoning Trace:** Watch the "Glass Box" AI **System 2** logic as it iteratively weighs complex trade-offs (Timelines vs. Mobility Scores) in real-time.
-*   **Timeline Simulation:** Projects the "Time-to-Citizenship" and value accretion over 1, 3, and 5 years.
+*   **Holographic Projection:** A 3D visualization of your target identity.
+*   **Continuous Reasoning Trace:** Watch the Glass Box AI logic as it iteratively weighs complex trade-offs (Timelines vs. Mobility Scores) in real-time.
 *   **Neural Access Map:** Visualizes how a new passport unlocks specific global regions.
 <img width="1916" height="819" alt="Screenshot 2026-02-02 172148" src="https://github.com/user-attachments/assets/1f5ec916-d7e8-4468-9b3c-10ce08164247" />
 
@@ -66,7 +66,7 @@ Converge introduces:
 <img width="1915" height="827" alt="Screenshot 2026-02-02 172041" src="https://github.com/user-attachments/assets/ac5cbaf9-f386-4eba-8ef5-0763c07e500d" />
 
 ### [04. TERMINAL] The Intelligence Wire
-*   **Cyberpunk News Feed:** A "floating" masonry grid of real-time global intelligence.
+*   **Cyberpunk News Feed:** A floating masonry grid of real-time global intelligence.
 *   **Gemini Search Grounding:** Fetches *actual* live data on policy changes, crises, and visa innovations.
 *   **Smart Categorization:** Automatically tags news as `Policy 🏛️`, `Crisis ⚠️`, or `Innovation 💡`.
 <img width="1919" height="824" alt="Screenshot 2026-02-02 171956" src="https://github.com/user-attachments/assets/6999d1ff-0a2c-4cba-85fd-712428241d44" />
@@ -78,7 +78,7 @@ Converge introduces:
 ### 🧠 The Brain (Gemini 3.0 pro)
 Converge uses Gemini for:
 *   **Reasoning:** Determining if a user is eligible for a migration program.
-*   **Prediction:** Forecasting policy shifts based on congestion data.
+*   **Prediction:** Forecasting policy shifts based on congestion data to help users make informed migration decisions.
 *   **Grounding:** Fetching live verified news in the Terminal.
 
 ### 🏗️ The Stack
@@ -141,7 +141,7 @@ Converge uses Gemini for:
 Converge is built for **everyone**, complying with **WCAG 2.1 AA** standards and modern SEO best practices.
 
 ### ♿ Accessibility (The Universal Layer)
-*   **Keyboard Navigation:** Full support for non-mouse users. Tab through the "Golden Path" (News -> Plan -> Verify).
+*   **Keyboard Navigation:** Full support for non-mouse users. Tab through the Golden Path (News -> Plan -> Verify).
 *   **Semantic HTML:** Built with standard `<main>`, `<nav>`, `<header>` architecture for screen reader compatibility.
 *   **ARIA Integration:** Interactive maps and data visualizations include descriptive ARIA labels.
 *   **Reduced Motion:** Animations respect system preferences for sensitive users.
